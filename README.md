@@ -1,100 +1,39 @@
-# SkillOrbit AI 🚀
+# SkillOrbit AI
 
 **AI-Powered Career Development & Opportunity Platform**
 
-SkillOrbit AI connects job seekers, employers, and skill development providers through an intelligent platform that leverages AI to deliver personalised career roadmaps, smart job matching, and upskilling recommendations.
+SkillOrbit AI is an intelligent career development platform designed to connect individuals with relevant learning and employment opportunities.
 
----
+## Core Features
 
-## 📌 Project Overview
+- AI Resume Analysis
+- AI Skill Gap Analysis
+- Personalized Learning Roadmaps
+- Intelligent Job Matching
+- Employer Dashboard
+- Training Provider Portal
+- Role-Based Access Control
 
-| Item | Detail |
-|---|---|
-| **Project Type** | Hackathon – Full-Stack Web Application |
-| **Platform** | Web (Desktop & Mobile Responsive) |
-| **AI Integration** | Resume parsing, skill gap analysis, job matching |
+## Technology Stack
 
----
+**Frontend:** React, TypeScript, Vite, Tailwind CSS
 
-## 🏗️ Technology Stack
+**Backend:** Node.js, Express.js, TypeScript
 
-### Frontend
-- **Framework:** React 18 + TypeScript
-- **Build Tool:** Vite
-- **Styling:** Tailwind CSS
-- **State / Context:** React Context API
+**Database:** MongoDB, Mongoose
 
-### Backend
-- **Runtime:** Node.js
-- **Framework:** Express.js + TypeScript
-- **Database:** MongoDB + Mongoose ODM
-- **AI Services:** OpenAI API (planned)
+**AI:** LLM API Integration
 
----
+## Project Structure
 
-## 📁 Folder Structure
+- `frontend/` – React application
+- `backend/` – Express API server
+- `docs/` – Project documentation
 
-```
-skillorbit-ai/
-├── frontend/               # React + Vite client application
-│   ├── src/
-│   │   ├── assets/         # Static assets (images, fonts, icons)
-│   │   ├── components/     # Reusable UI components
-│   │   │   ├── common/     # Shared/generic components
-│   │   │   ├── layout/     # Layout wrappers (Navbar, Sidebar, Footer)
-│   │   │   └── ui/         # Design-system primitives (Button, Input, Card)
-│   │   ├── pages/          # Route-level page components
-│   │   │   ├── auth/       # Login, Register, Forgot Password
-│   │   │   ├── seeker/     # Job seeker dashboard & profile
-│   │   │   ├── employer/   # Employer dashboard & job posts
-│   │   │   ├── provider/   # Skill provider dashboard & courses
-│   │   │   └── admin/      # Admin panel
-│   │   ├── routes/         # React Router route definitions
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── services/       # API call abstractions (axios instances)
-│   │   ├── context/        # React Context providers
-│   │   ├── types/          # Shared TypeScript interfaces & types
-│   │   └── utils/          # Pure helper functions
-│   └── public/
-├── backend/                # Express.js REST API server
-│   └── src/
-│       ├── config/         # DB connection, env config, constants
-│       ├── controllers/    # Route handler functions
-│       ├── middlewares/    # Auth, error handling, validation middleware
-│       ├── models/         # Mongoose schema/model definitions
-│       ├── routes/         # Express route declarations
-│       ├── services/
-│       │   └── ai/         # AI integration services (OpenAI etc.)
-│       ├── validators/     # Request body validation schemas
-│       ├── utils/          # Utility helpers (token, email, etc.)
-│       └── types/          # TypeScript type declarations
-└── docs/                   # Project documentation
-    ├── architecture/       # System design & architecture diagrams
-    ├── api/                # API endpoint documentation
-    └── database/           # Database schema & ERD
-```
-
----
-
-## 👥 User Roles
-
-| Role | Description |
-|---|---|
-| **Job Seeker** | Browse jobs, get AI career guidance, track applications |
-| **Employer** | Post jobs, search candidates, AI-powered screening |
-| **Skill Provider** | Publish courses, connect learners with opportunities |
-| **Admin** | Platform management, analytics, user moderation |
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js ≥ 18.x
-- MongoDB (local or Atlas)
-- npm or yarn
+## Local Development
 
 ### Frontend
+
 ```bash
 cd frontend
 npm install
@@ -102,20 +41,15 @@ npm run dev
 ```
 
 ### Backend
+
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
----
+Configure your environment variables using the `.env.example` files before running the application.
 
-## 🔐 Environment Variables
+## Project Status
 
-Copy `.env.example` to `.env` in both `frontend/` and `backend/` and fill in the required values.
-
----
-
-## 📄 License
-
-MIT — built for hackathon demonstration purposes.
+Currently in the foundation and initial setup stage.
