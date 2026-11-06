@@ -12,8 +12,13 @@ export const errorHandler = (
   _next: NextFunction
 ): void => {
   const statusCode = err.statusCode ?? 500;
+
+  // Never expose stack traces in production
+  const isProduction = process.env.NODE_ENV === 'production';
+
   res.status(statusCode).json({
     success: false,
     message: err.message || 'Internal Server Error',
+    ...(isProduction ? {} : { stack: err.stack }),
   });
 };

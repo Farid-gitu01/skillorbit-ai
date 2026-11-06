@@ -1,25 +1,59 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
-import morgan from 'morgan'
+/**
+ * app.ts — Express application factory
+ *
+ * Registers global middleware and mounts all API routes.
+ * Does NOT start the HTTP server — that is handled by server.ts.
+ */
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 
-const app = express()
+import { CLIENT_URL, IS_PRODUCTION } from './config/constants.js';
+import { notFound } from './middlewares/not-found.middleware.js';
+import { errorHandler } from './middlewares/error.middleware.js';
+import apiRoutes from './routes/index.js';
 
-app.use(helmet())
+const app = express();
 
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173'
-}))
+// ── Security headers ─────────────────────────────────────────────────────────
+app.use(helmet());
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(morgan('dev'))
-
-app.get('/api/health', (_req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'SkillOrbit AI API is running!'
+// ── CORS ─────────────────────────────────────────────────────────────────────
+app.use(
+  cors({
+    origin: IS_PRODUCTION ? CLIENT_URL : [CLIENT_URL, 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false,
   })
-})
+);
 
-export default app
+// ── Request body parsing ──────────────────────────────────────────────────────
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// ── HTTP request logging ──────────────────────────────────────────────────────
+app.use(morgan(IS_PRODUCTION ? 'combined' : 'dev'));
+
+// ── Global rate limiter ───────────────────────────────────────────────────────
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000,  // 1 minute
+  max: 100,             // 100 requests per IP per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests, please try again later.' },
+});
+app.use(globalLimiter);
+
+// ── API routes ────────────────────────────────────────────────────────────────
+app.use('/api', apiRoutes);
+
+// ── 404 handler ───────────────────────────────────────────────────────────────
+app.use(notFound);
+
+// ── Global error handler (must be last middleware) ────────────────────────────
+app.use(errorHandler);
+
+export default app;

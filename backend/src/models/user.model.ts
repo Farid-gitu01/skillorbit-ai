@@ -8,34 +8,49 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: UserRole;
+  isActive: boolean;
+  isEmailVerified: boolean;
+  lastLoginAt?: Date;
+  isDeleted: boolean;
+  deletedAt?: Date;
   createdAt: Date;
-  matchPassword(enteredPassword: string): Promise<boolean>;
+  updatedAt: Date;
+  matchPassword(plain: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser>(
   {
-    name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true },
-    password: { type: String, required: true, minlength: 8 },
+    name: { type: String, required: true, trim: true, minlength: 2, maxlength: 100 },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true, minlength: 8, select: false },
     role: {
       type: String,
-      enum: ['seeker', 'employer', 'provider', 'admin'],
+      enum: ['seeker', 'employer', 'provider', 'admin'] as const,
       default: 'seeker',
     },
+    isActive: { type: Boolean, default: true },
+    isEmailVerified: { type: Boolean, default: false },
+    lastLoginAt: { type: Date },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
 
+// Hash password before saving when it has been modified
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-userSchema.methods.matchPassword = async function (
-  enteredPassword: string
-): Promise<boolean> {
-  return bcrypt.compare(enteredPassword, this.password);
+userSchema.methods.matchPassword = async function (plain: string): Promise<boolean> {
+  return bcrypt.compare(plain, this.password as string);
 };
+
+// Indexes (email unique handled by schema field; additional indexes below)
+userSchema.index({ role: 1, isDeleted: 1 });
+userSchema.index({ createdAt: -1 });
+userSchema.index({ name: 'text', email: 'text' });
 
 export const User = mongoose.model<IUser>('User', userSchema);
