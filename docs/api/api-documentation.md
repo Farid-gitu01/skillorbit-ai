@@ -15,14 +15,7 @@
 
 ## 2. Authentication
 
-All protected endpoints require a Bearer token in the `Authorization` header:
-
-```
-Authorization: Bearer <JWT>
-```
-
-Tokens are issued by `POST /api/auth/login` and `POST /api/auth/register`.  
-Default expiry: **7 days** (configurable via `JWT_EXPIRES_IN` env var).
+Registration and login set a stateless JWT in the `skillorbit_access` HttpOnly cookie; logout clears it. The JWT is not returned in JSON or stored in browser storage. Generated tokens contain the user ID (`id`) and standard `iat`/`exp` claims only, signed with HS256 using `JWT_SECRET`. `JWT_EXPIRES_IN` defaults to `7d` and is validated at startup; cookie max-age is derived from token expiry. Protected routes parse this cookie, verify the JWT, load the current user, enforce account state, and attach safe identity/role data. Role restrictions use that database-backed role. For cross-origin browser requests, the API allows credentials for explicit trusted origins and Axios sends credentials. See [Authentication Architecture](../architecture/authentication-architecture.md) for details.
 
 ---
 
@@ -72,8 +65,8 @@ Default expiry: **7 days** (configurable via `JWT_EXPIRES_IN` env var).
 | `201` | Created | Successful POST (resource created) |
 | `204` | No Content | Successful DELETE |
 | `400` | Bad Request | Validation failure, malformed body |
-| `401` | Unauthorised | Missing or invalid JWT |
-| `403` | Forbidden | Authenticated but wrong role |
+| `401` | Unauthorised | Missing, invalid, or expired cookie authentication; or ineligible account |
+| `403` | Forbidden | Authenticated user lacks the required role |
 | `404` | Not Found | Resource does not exist |
 | `409` | Conflict | Duplicate resource (e.g. email already registered) |
 | `429` | Too Many Requests | Rate limit exceeded |
@@ -109,7 +102,7 @@ Create a new user account.
 
 ```json
 {
-  "name": "Farid Khan",
+  "fullName": "Farid Khan",
   "email": "farid@example.com",
   "password": "secureP@ss1",
   "role": "seeker"
@@ -118,25 +111,28 @@ Create a new user account.
 
 | Field | Type | Required | Constraints |
 |---|---|---|---|
-| `name` | string | ✅ | min 2, max 100 |
+| `fullName` | string | ✅ | min 2, max 100; stored in the existing `User.name` field |
 | `email` | string | ✅ | valid email, unique |
 | `password` | string | ✅ | min 8 characters |
-| `role` | string | — | `seeker \| employer \| provider` (default: `seeker`) |
+| `role` | string | ✅ | `seeker \| employer \| provider`; public registration rejects `admin` |
 
-> Note: `admin` role cannot be self-assigned; it must be granted by an existing admin.
+Registration creates the account as unverified, stores a hash-only 24-hour verification token, and sends a verification email when SMTP is configured. Login remains allowed for unverified accounts during the MVP. In development without SMTP, the response may contain a verification token for local testing; production responses never contain it. On successful registration, the API also sets the `skillorbit_access` HttpOnly cookie; the JWT is never returned in JSON.
 
 **Response `201`**
 ```json
 {
   "success": true,
-  "token": "<JWT>",
   "data": {
-    "_id": "664abc123def",
-    "name": "Farid Khan",
-    "email": "farid@example.com",
-    "role": "seeker",
-    "createdAt": "2026-11-05T16:00:00.000Z"
-  }
+    "user": {
+      "_id": "664abc123def",
+      "name": "Farid Khan",
+      "email": "farid@example.com",
+      "role": "seeker",
+      "createdAt": "2026-11-05T16:00:00.000Z",
+      "updatedAt": "2026-11-05T16:00:00.000Z"
+    }
+  },
+  "message": "Registration successful"
 }
 ```
 
@@ -164,19 +160,68 @@ Authenticate an existing user.
 ```json
 {
   "success": true,
-  "token": "<JWT>",
   "data": {
-    "_id": "664abc123def",
-    "name": "Farid Khan",
-    "email": "farid@example.com",
-    "role": "seeker"
-  }
+    "user": {
+      "_id": "664abc123def",
+      "name": "Farid Khan",
+      "email": "farid@example.com",
+      "role": "seeker"
+    }
+  },
+  "message": "Login successful"
 }
 ```
+
+On success, the server sets the `skillorbit_access` HttpOnly cookie. Its lifetime matches `JWT_EXPIRES_IN`. Login rejects inactive or deleted accounts with the same generic `401` response as invalid credentials. Unverified email does not prevent login during the MVP.
 
 **Error `401`** — Invalid credentials
 ```json
 { "success": false, "message": "Invalid email or password" }
+```
+
+#### POST `/api/auth/forgot-password`
+
+Request JSON: `{ "email": "farid@example.com" }`. Sends a reset link via configured SMTP and returns the same generic response whether or not an eligible account exists:
+
+```json
+{
+  "success": true,
+  "message": "If an account exists, reset instructions can be sent."
+}
+```
+
+If SMTP is unavailable in development, `data.resetToken` may be included for local testing for every request to avoid account enumeration. Production never returns a reset token. SMTP delivery failures produce a generic response and do not claim delivery succeeded.
+
+#### POST `/api/auth/reset-password`
+
+Request JSON:
+```json
+{
+  "token": "<64-character reset token>",
+  "newPassword": "a-new-strong-password"
+}
+```
+
+The token is single-use and expires after 15 minutes. Success returns `200`; invalid, expired, or reused tokens return the same `400` error. Password reset updates the existing account; it does not revoke already-issued stateless JWTs.
+
+#### POST `/api/auth/verify-email`
+
+Request JSON: `{ "token": "<64-character verification token>" }`. A valid unexpired token is atomically consumed and marks the account email verified. Tokens expire after 24 hours; invalid, expired, and reused tokens return a generic `400` response.
+
+#### POST `/api/auth/resend-verification`
+
+Request JSON: `{ "email": "farid@example.com" }`. Rotates and emails a pending verification token when the account exists and is eligible. The response is generic and does not reveal whether the address is registered or already verified. With no SMTP in development, a development-only token may be included for local testing; no production response contains it.
+
+#### POST `/api/auth/logout`
+
+Clear the authentication cookie. Logout is idempotent and does not revoke a copied stateless JWT.
+
+**Response `200`**
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
 ```
 
 ---
@@ -187,26 +232,30 @@ Authenticate an existing user.
 
 Retrieve the profile of the currently authenticated user.
 
-**Headers:** `Authorization: Bearer <JWT>`
+**Authentication:** Valid `skillorbit_access` cookie. `protect` verifies the JWT, loads the current eligible account, and attaches only safe public identity fields.
 
 **Response `200`**
 ```json
 {
   "success": true,
   "data": {
-    "_id": "664abc123def",
-    "name": "Farid Khan",
-    "email": "farid@example.com",
-    "role": "seeker",
-    "createdAt": "2026-11-05T16:00:00.000Z",
-    "updatedAt": "2026-11-05T16:00:00.000Z"
+    "user": {
+      "_id": "664abc123def",
+      "name": "Farid Khan",
+      "email": "farid@example.com",
+      "role": "seeker",
+      "createdAt": "2026-11-05T16:00:00.000Z",
+      "updatedAt": "2026-11-05T16:00:00.000Z"
+    }
   }
 }
 ```
 
-**Error `401`** — No token / expired token
+The response contains only the safe user allowlist (`_id`, `name`, `email`, `role`, `createdAt`, and `updatedAt`); password hashes and internal account/deletion fields are never returned.
+
+**Error `401`** — Missing, invalid, or expired cookie
 ```json
-{ "success": false, "message": "Not authorised – no token" }
+{ "success": false, "message": "Authentication required" }
 ```
 
 ---
@@ -289,7 +338,8 @@ Rate limiting is applied via `express-rate-limit` on the auth routes to mitigate
 
 | Scope | Window | Max Requests |
 |---|---|---|
-| `POST /api/auth/*` | 15 minutes | 10 requests |
+| General auth endpoints | 15 minutes | 20 requests |
+| Password reset and email verification action endpoints | 15 minutes | 5 requests |
 | All routes | 1 minute | 100 requests |
 
 Exceeded limits return HTTP `429 Too Many Requests`.

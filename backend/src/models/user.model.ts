@@ -13,6 +13,10 @@ export interface IUser extends Document {
   lastLoginAt?: Date;
   isDeleted: boolean;
   deletedAt?: Date;
+  passwordResetTokenHash?: string;
+  passwordResetExpiresAt?: Date;
+  emailVerificationTokenHash?: string;
+  emailVerificationExpiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
   matchPassword(plain: string): Promise<boolean>;
@@ -33,6 +37,10 @@ const userSchema = new Schema<IUser>(
     lastLoginAt: { type: Date },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
+    passwordResetTokenHash: { type: String, select: false },
+    passwordResetExpiresAt: { type: Date, select: false },
+    emailVerificationTokenHash: { type: String, select: false },
+    emailVerificationExpiresAt: { type: Date, select: false },
   },
   { timestamps: true }
 );
@@ -52,5 +60,7 @@ userSchema.methods.matchPassword = async function (plain: string): Promise<boole
 userSchema.index({ role: 1, isDeleted: 1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ name: 'text', email: 'text' });
+userSchema.index({ passwordResetTokenHash: 1 }, { sparse: true });
+userSchema.index({ emailVerificationTokenHash: 1 }, { sparse: true });
 
 export const User = mongoose.model<IUser>('User', userSchema);

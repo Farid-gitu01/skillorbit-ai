@@ -5,6 +5,7 @@
  * Does NOT start the HTTP server — that is handled by server.ts.
  */
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -26,13 +27,14 @@ app.use(
     origin: IS_PRODUCTION ? CLIENT_URL : [CLIENT_URL, 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: false,
+    credentials: true,
   })
 );
 
 // ── Request body parsing ──────────────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // ── HTTP request logging ──────────────────────────────────────────────────────
 app.use(morgan(IS_PRODUCTION ? 'combined' : 'dev'));

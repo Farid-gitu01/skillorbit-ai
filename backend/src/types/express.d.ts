@@ -1,6 +1,20 @@
-// Backend-specific TypeScript type declarations
-import { type Request } from 'express';
+import type { UserRole } from '../models/user.model.js';
 
-export interface AuthRequest extends Request {
-  userId?: string;
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+      userRole?: UserRole;
+      authUser?: {
+        id: string;
+        name: string;
+        email: string;
+        role: UserRole;
+        createdAt: Date;
+        updatedAt: Date;
+      };
+    }
+  }
 }
+
+export {};

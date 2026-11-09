@@ -1,32 +1,54 @@
 import { type Request, type Response, type NextFunction } from 'express';
+import { User } from '../models/user.model.js';
+import type { UserRole } from '../models/user.model.js';
 import { verifyToken } from '../utils/token.util.js';
-import type { UserRole } from '../models/index.js';
+import { AUTH_COOKIE_NAME } from '../utils/auth-cookie.util.js';
 
-export interface AuthRequest extends Request {
-  userId?: string;
-  userRole?: UserRole;
-}
+export type AuthRequest = Request;
 
 /**
- * protect — verifies the Bearer JWT and attaches userId + userRole to the request.
+ * protect — verifies the HttpOnly-cookie JWT, loads the current eligible user,
+ * and attaches only safe database-backed identity fields to the request.
  */
-export const protect = (
+export const protect = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-): void => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    res.status(401).json({ success: false, message: 'Not authorised – no token' });
+): Promise<void> => {
+  const token = req.cookies?.[AUTH_COOKIE_NAME];
+  if (typeof token !== 'string' || token.length === 0) {
+    res.status(401).json({ success: false, message: 'Authentication required' });
     return;
   }
+
+  let decoded;
   try {
-    const token = authHeader.split(' ')[1]!;
-    const decoded = verifyToken(token);
-    req.userId = decoded.id;
-    next();
+    decoded = verifyToken(token);
   } catch {
-    res.status(401).json({ success: false, message: 'Not authorised – invalid or expired token' });
+    res.status(401).json({ success: false, message: 'Invalid or expired authentication' });
+    return;
+  }
+
+  try {
+    const user = await User.findById(decoded.id).select('name email role createdAt updatedAt isActive isDeleted deletedAt');
+    if (!user || user.isActive !== true || user.isDeleted === true || user.deletedAt != null) {
+      res.status(401).json({ success: false, message: 'Invalid or expired authentication' });
+      return;
+    }
+
+    req.userId = user.id;
+    req.userRole = user.role;
+    req.authUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+    next();
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -36,7 +58,11 @@ export const protect = (
  */
 export const restrictTo = (...roles: UserRole[]) =>
   (req: AuthRequest, res: Response, next: NextFunction): void => {
-    if (!req.userRole || !roles.includes(req.userRole)) {
+    if (!req.authUser) {
+      res.status(401).json({ success: false, message: 'Authentication required' });
+      return;
+    }
+    if (!roles.includes(req.authUser.role)) {
       res.status(403).json({ success: false, message: 'Forbidden – insufficient permissions' });
       return;
     }

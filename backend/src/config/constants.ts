@@ -11,9 +11,17 @@ export const NODE_ENV = env.NODE_ENV;
 export const MONGODB_URI = env.MONGODB_URI;
 export const JWT_SECRET = env.JWT_SECRET;
 export const JWT_EXPIRES_IN = env.JWT_EXPIRES_IN;
+export const JWT_EXPIRES_IN_SECONDS = env.JWT_EXPIRES_IN_SECONDS;
 export const CLIENT_URL = env.CLIENT_URL;
+export const SMTP_HOST = env.SMTP_HOST;
+export const SMTP_PORT = env.SMTP_PORT;
+export const SMTP_SECURE = env.SMTP_SECURE;
+export const SMTP_USER = env.SMTP_USER;
+export const SMTP_PASS = env.SMTP_PASS;
+export const EMAIL_FROM = env.EMAIL_FROM;
 export const IS_PRODUCTION = env.NODE_ENV === 'production';
 export const IS_DEVELOPMENT = env.NODE_ENV === 'development';
+export const IS_EXPLICIT_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 // AI — intentionally undefined until an AI provider is configured
 export const AI_PROVIDER = env.AI_PROVIDER;

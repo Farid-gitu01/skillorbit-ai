@@ -55,6 +55,12 @@ const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api'
 | `MONGODB_URI` | ✅ | — | MongoDB Atlas connection string |
 | `JWT_SECRET` | ✅ | — | JWT signing secret (min 32 random characters recommended) |
 | `JWT_EXPIRES_IN` | — | `7d` | JWT token lifetime (e.g. `7d`, `24h`, `3600`) |
+| `SMTP_HOST` | Production | — | SMTP server hostname; development may omit the complete SMTP configuration |
+| `SMTP_PORT` | Production | — | SMTP server port, integer from 1 to 65535 |
+| `SMTP_SECURE` | — | Port-derived | `true` for implicit TLS (typically 465), `false` for STARTTLS (typically 587) |
+| `SMTP_USER` | Production | — | SMTP authentication username; backend-only secret/configuration |
+| `SMTP_PASS` | Production | — | SMTP authentication password; backend-only secret |
+| `EMAIL_FROM` | Production | — | Verified sender address/name used for application mail |
 | `AI_PROVIDER` | — | — | AI provider identifier (`openai \| azure-openai \| anthropic \| custom`) |
 | `AI_API_KEY` | — | — | API key for the AI provider |
 
@@ -68,6 +74,7 @@ const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api'
 | `NODE_ENV` | Optional | Defaults to `development` |
 | `CLIENT_URL` | Optional | Defaults to `http://localhost:5173` |
 | `JWT_EXPIRES_IN` | Optional | Defaults to `7d` |
+| SMTP settings | Production required; development optional as a complete set | Production startup fails if required SMTP host, port, user, password, or sender is absent/invalid; a partial development configuration also fails |
 | `AI_PROVIDER` | Optional | Warning logged; AI features unavailable |
 | `AI_API_KEY` | Optional | Warning logged; AI features unavailable |
 
@@ -81,13 +88,18 @@ The `env.ts` module runs synchronously when first imported in `server.ts` (befor
 2. Asserts required variables are present and non-empty
 3. Parses `PORT` as an integer within a valid range
 4. Normalises `NODE_ENV` to a known value
-5. Exports a typed `env` object used by `constants.ts`
+5. Validates SMTP configuration (optional as a complete set in development; required in production)
+6. Exports a typed `env` object used by `constants.ts`
 
 ```
 [env] FATAL: Required environment variable "MONGODB_URI" is missing or empty.
 ```
 
 No credentials or values are printed in error or warning messages.
+
+### 3.4 Email Delivery
+
+The backend uses Nodemailer with SMTP. Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and `EMAIL_FROM` on the backend only. `SMTP_SECURE` is optional and defaults to `true` on port 465 and `false` on other ports. Production requires SMTP configuration at startup; development may omit all SMTP variables, in which case delivery is unavailable and the API does not claim that mail was sent. A partial SMTP configuration fails startup. SMTP secrets must never use a `VITE_` prefix, be committed, logged, or returned to the browser.
 
 ---
 
@@ -104,6 +116,7 @@ No credentials or values are printed in error or warning messages.
 │                   Backend (Node.js)                  │
 │  PORT, NODE_ENV, CLIENT_URL                          │
 │  MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN             │
+│  SMTP_HOST/PORT/USER/PASS, EMAIL_FROM (backend-only)  │
 │  AI_PROVIDER, AI_API_KEY                             │
 │  All validated at startup via env.ts                 │
 └─────────────────────────────────────────────────────┘
