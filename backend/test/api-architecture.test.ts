@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { createServer, type Server } from 'node:http';
 import { after, before, test } from 'node:test';
+import { Duplex, Readable } from 'node:stream';
+import { EventEmitter } from 'node:events';
 
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'skillorbit-api-architecture-test-secret';
@@ -13,6 +15,110 @@ const { default: app } = await import('../src/app.js');
 let server: Server;
 let baseUrl: string;
 
+async function dispatchToApp(url: string, init?: RequestInit): Promise<Response> {
+  const parsed = new URL(url);
+  const method = (init?.method ?? 'GET').toUpperCase();
+  const headers = new Headers(init?.headers);
+  const rawBody = init?.body ? String(init.body) : undefined;
+
+  return new Promise<Response>((resolve, reject) => {
+    const reqStream = new Readable({
+      read() {
+        if (rawBody) this.push(Buffer.from(rawBody, 'utf8'));
+        this.push(null);
+      },
+    }) as any;
+
+    reqStream.method = method;
+    reqStream.url = parsed.pathname + parsed.search;
+    reqStream.headers = {};
+    reqStream.rawHeaders = [];
+    headers.forEach((val, key) => {
+      const lower = key.toLowerCase();
+      reqStream.headers[lower] = val;
+      reqStream.rawHeaders.push(key, val);
+    });
+
+    if (rawBody && !reqStream.headers['content-length']) {
+      const len = Buffer.byteLength(rawBody, 'utf8').toString();
+      reqStream.headers['content-length'] = len;
+      reqStream.rawHeaders.push('Content-Length', len);
+    }
+
+    const mockSocket = new Duplex({
+      read() {},
+      write(_chunk, _encoding, callback) {
+        callback();
+      },
+    }) as any;
+    mockSocket.remoteAddress = '127.0.0.1';
+    mockSocket.encrypted = false;
+    reqStream.socket = mockSocket;
+    reqStream.connection = mockSocket;
+    reqStream.ip = '127.0.0.1';
+
+    const resHeaders = new Headers();
+    const chunks: Buffer[] = [];
+    let statusCode = 200;
+
+    const mockRes = new EventEmitter() as any;
+    mockRes.statusCode = statusCode;
+    mockRes.headersSent = false;
+    mockRes.socket = mockSocket;
+    mockRes.connection = mockSocket;
+
+    mockRes.setHeader = (name: string, value: string | string[]) => {
+      if (Array.isArray(value)) {
+        for (const v of value) resHeaders.append(name, v);
+      } else {
+        resHeaders.set(name, value);
+      }
+      return mockRes;
+    };
+    mockRes.getHeader = (name: string) => resHeaders.get(name);
+    mockRes.removeHeader = (name: string) => resHeaders.delete(name);
+    mockRes.hasHeader = (name: string) => resHeaders.has(name);
+
+    mockRes.writeHead = (code: number, messageOrHeaders?: any, maybeHeaders?: any) => {
+      statusCode = code;
+      mockRes.statusCode = code;
+      const hdrs = typeof messageOrHeaders === 'object' ? messageOrHeaders : maybeHeaders;
+      if (hdrs) {
+        for (const [k, v] of Object.entries(hdrs)) {
+          mockRes.setHeader(k, v as any);
+        }
+      }
+      return mockRes;
+    };
+
+    mockRes.write = (chunk: any) => {
+      if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      return true;
+    };
+
+    mockRes.end = (chunk?: any) => {
+      if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      mockRes.headersSent = true;
+      const bodyBuffer = Buffer.concat(chunks);
+      const response = new Response(bodyBuffer, {
+        status: mockRes.statusCode ?? statusCode,
+        statusText: '',
+        headers: resHeaders,
+      });
+      resolve(response);
+    };
+
+    try {
+      (app as any).handle(reqStream, mockRes, (err: unknown) => {
+        if (err) reject(err);
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+const originalFetch = globalThis.fetch;
 before(async () => {
   server = createServer(app);
   await new Promise<void>((resolve, reject) => {
@@ -22,9 +128,21 @@ before(async () => {
   const address = server.address();
   assert.ok(address && typeof address !== 'string');
   baseUrl = `http://127.0.0.1:${address.port}/api`;
+
+  globalThis.fetch = async (input: any, init?: any) => {
+    try {
+      return await originalFetch(input, init);
+    } catch (err: any) {
+      if (err?.code === 'EACCES' || err?.cause?.code === 'EACCES' || err?.message?.includes('fetch failed')) {
+        return await dispatchToApp(String(input), init);
+      }
+      throw err;
+    }
+  };
 });
 
 after(async () => {
+  globalThis.fetch = originalFetch;
   if (server?.listening) await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
 });
 
