@@ -15,6 +15,7 @@ import { CLIENT_URL, IS_PRODUCTION } from './config/constants.js';
 import { notFound } from './middlewares/not-found.middleware.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import apiRoutes from './routes/index.js';
+import { sendError } from './utils/api-response.util.js';
 
 const app = express();
 
@@ -36,8 +37,9 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
-// ── HTTP request logging ──────────────────────────────────────────────────────
-app.use(morgan(IS_PRODUCTION ? 'combined' : 'dev'));
+// ── HTTP request logging (omit query strings that may contain one-time tokens) ──
+morgan.token('safe-path', (req) => req.url?.split('?')[0] ?? '/');
+app.use(morgan(':method :safe-path :status :response-time ms - :res[content-length]'));
 
 // ── Global rate limiter ───────────────────────────────────────────────────────
 const globalLimiter = rateLimit({
@@ -45,7 +47,9 @@ const globalLimiter = rateLimit({
   max: 100,             // 100 requests per IP per window
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, message: 'Too many requests, please try again later.' },
+  handler: (_req, res) => {
+    sendError(res, 429, 'Too many requests, please try again later.', { code: 'RATE_LIMITED' });
+  },
 });
 app.use(globalLimiter);
 

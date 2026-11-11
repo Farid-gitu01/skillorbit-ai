@@ -33,7 +33,7 @@ The existing JWT configuration is `JWT_SECRET` and `JWT_EXPIRES_IN` (default: `7
 
 ## 3. API Contract
 
-All successful and error responses follow the existing `{ success, data?, message? }` envelope. Auth endpoints are under `/api`.
+Auth endpoints use the shared response contract: successes have `success: true` and optional `data`, `message`, and `meta`; errors have `success: false`, `message`, optional machine-readable `code`, and optional field-level `errors`. Auth endpoints are under `/api`.
 
 ### 3.1 Registration — `POST /api/auth/register`
 

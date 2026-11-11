@@ -40,8 +40,8 @@ const startServer = async (): Promise<void> => {
         await mongoose.connection.close();
         console.log('[db] MongoDB connection closed.');
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        console.error(`[db] Error closing MongoDB connection: ${message}`);
+        const errorName = err instanceof Error ? err.name : 'UnknownError';
+        console.error(`[db] Error closing MongoDB connection: ${errorName}`);
       } finally {
         process.exit(0);
       }
@@ -59,7 +59,7 @@ const startServer = async (): Promise<void> => {
 };
 
 startServer().catch((err: unknown) => {
-  const message = err instanceof Error ? err.message : String(err);
-  console.error(`[server] FATAL: Unexpected startup error — ${message}`);
+  const errorName = err instanceof Error ? err.name : 'UnknownError';
+  console.error(`[server] FATAL: Unexpected startup error — ${errorName}`);
   process.exit(1);
 });

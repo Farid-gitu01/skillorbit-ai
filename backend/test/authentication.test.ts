@@ -151,7 +151,8 @@ test('registration creates safe account, hashes verification token, emails it, a
     body: { fullName: 'Test User', email: 'user@example.test', password: 'StrongPass123', role: 'seeker' },
   });
   await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(response.statusCode, 201);
+    assert.equal(response.statusCode, 201);
+    assert.equal(response.payload.success, true);
   assert.equal(createFields.isEmailVerified, false);
   assert.match(sentToken, /^[a-f\d]{64}$/i);
   assert.equal(createFields.emailVerificationTokenHash, resetTokens.hashPasswordResetToken(sentToken));
@@ -501,6 +502,9 @@ test('cookie CORS and browser token-storage configuration remain secure', async 
   assert.match(appSource, /credentials:\s*true/);
   assert.match(appSource, /origin:\s*IS_PRODUCTION\s*\?\s*CLIENT_URL/);
   assert.match(appSource, /cookieParser\(\)/);
+  assert.match(appSource, /morgan\.token\('safe-path'/);
+  assert.match(appSource, /:safe-path/);
+  assert.doesNotMatch(appSource, /morgan\('(?:combined|dev)'\)/);
   assert.match(frontendSource, /withCredentials:\s*true/);
   assert.doesNotMatch(frontendSource, /localStorage|sessionStorage/);
   assert.match(authRouteSource, /max:\s*20/);

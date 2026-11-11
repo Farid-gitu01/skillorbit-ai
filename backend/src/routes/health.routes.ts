@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import mongoose from 'mongoose';
+import { sendError, sendSuccess } from '../utils/api-response.util.js';
 
 const router = Router();
 
@@ -23,13 +24,19 @@ router.get('/', (_req: Request, res: Response): void => {
   const dbStatus = dbStatusMap[dbState] ?? 'unknown';
   const isHealthy = dbState === 1;
 
-  res.status(isHealthy ? 200 : 503).json({
-    success: isHealthy,
+  const data = {
     app: 'SkillOrbit AI',
     status: isHealthy ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
     database: dbStatus,
-  });
+  };
+
+  if (isHealthy) {
+    sendSuccess(res, 200, data, 'SkillOrbit AI API is healthy');
+    return;
+  }
+
+  sendError(res, 503, 'SkillOrbit AI API is degraded', { code: 'SERVICE_UNAVAILABLE' });
 });
 
 export default router;

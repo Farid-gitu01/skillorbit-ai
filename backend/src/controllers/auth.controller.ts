@@ -23,6 +23,7 @@ import {
   type ResendVerificationInput,
 } from '../validators/auth.validator.js';
 import { emailService } from '../services/email/email.service.js';
+import { sendCreated, sendError, sendMessage, sendSuccess } from '../utils/api-response.util.js';
 
 const safeUser = (user: InstanceType<typeof User>) => ({
   _id: user.id,
@@ -42,7 +43,7 @@ export const register = async (
     const { fullName, email, password, role } = req.body as RegisterInput;
 
     if (await User.exists({ email })) {
-      res.status(409).json({ success: false, message: 'Email already in use' });
+      sendError(res, 409, 'Email already in use', { code: 'EMAIL_IN_USE' });
       return;
     }
 
@@ -72,16 +73,14 @@ export const register = async (
 
     res.cookie(AUTH_COOKIE_NAME, token, getAuthCookieOptions(token));
 
-    res.status(201).json({
-      success: true,
-      data: { user: safeUser(user) },
-      message: verificationEmailSent
-				? 'Registration successful. Check your email to verify your account.'
-        : 'Registration successful. Verification email delivery is unavailable; request another verification email when delivery is configured.',
-    ...(IS_EXPLICIT_DEVELOPMENT && !emailService.isConfigured()
-      ? { data: { user: safeUser(user), verificationToken } }
-      : {}),
-    });
+    const message = verificationEmailSent
+      ? 'Registration successful. Check your email to verify your account.'
+      : 'Registration successful. Verification email delivery is unavailable; request another verification email when delivery is configured.';
+    const data = {
+      user: safeUser(user),
+      ...(IS_EXPLICIT_DEVELOPMENT && !emailService.isConfigured() ? { verificationToken } : {}),
+    };
+    sendCreated(res, data, message);
   } catch (error) {
     if (
       typeof error === 'object' &&
@@ -89,7 +88,7 @@ export const register = async (
       'code' in error &&
       error.code === 11000
     ) {
-      res.status(409).json({ success: false, message: 'Email already in use' });
+      sendError(res, 409, 'Email already in use', { code: 'EMAIL_IN_USE' });
       return;
     }
 
@@ -107,12 +106,12 @@ export const login = async (
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.matchPassword(password))) {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+      sendError(res, 401, 'Invalid email or password', { code: 'INVALID_CREDENTIALS' });
       return;
     }
 
     if (user.isActive !== true || user.isDeleted === true || user.deletedAt != null) {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+      sendError(res, 401, 'Invalid email or password', { code: 'INVALID_CREDENTIALS' });
       return;
     }
 
@@ -122,15 +121,7 @@ export const login = async (
     const token = generateToken(user.id);
     res.cookie(AUTH_COOKIE_NAME, token, getAuthCookieOptions(token));
 
-    res.status(200).json({
-      success: true,
-      data: {
-        user: {
-          ...safeUser(user),
-        },
-      },
-      message: 'Login successful',
-    });
+    sendSuccess(res, 200, { user: safeUser(user) }, 'Login successful');
   } catch (error) {
     next(error);
   }
@@ -138,7 +129,7 @@ export const login = async (
 
 export const logout = (_req: Request, res: Response): void => {
   res.clearCookie(AUTH_COOKIE_NAME, getAuthCookieClearOptions());
-  res.status(200).json({ success: true, message: 'Logged out successfully' });
+  sendMessage(res, 200, 'Logged out successfully');
 };
 
 export const requestPasswordReset = async (
@@ -182,7 +173,8 @@ export const requestPasswordReset = async (
       response.data = { resetToken };
     }
 
-    res.status(200).json(response);
+    if (response.data) sendSuccess(res, 200, response.data, response.message);
+    else sendMessage(res, 200, response.message);
   } catch (error) {
     next(error);
   }
@@ -215,11 +207,11 @@ export const verifyEmail = async (
     );
 
     if (!user) {
-      res.status(400).json({ success: false, message: 'Invalid or expired verification token' });
+      sendError(res, 400, 'Invalid or expired verification token', { code: 'INVALID_VERIFICATION_TOKEN' });
       return;
     }
 
-    res.status(200).json({ success: true, message: 'Email verified successfully' });
+    sendMessage(res, 200, 'Email verified successfully');
   } catch (error) {
     next(error);
   }
@@ -257,7 +249,8 @@ export const resendVerificationEmail = async (
     if (IS_EXPLICIT_DEVELOPMENT && !emailService.isConfigured()) {
       response.data = { verificationToken };
     }
-    res.status(200).json(response);
+    if (response.data) sendSuccess(res, 200, response.data, response.message);
+    else sendMessage(res, 200, response.message);
   } catch (error) {
     next(error);
   }
@@ -288,7 +281,7 @@ export const resetPassword = async (
     );
 
     if (!user) {
-      res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+      sendError(res, 400, 'Invalid or expired reset token', { code: 'INVALID_RESET_TOKEN' });
       return;
     }
 
@@ -296,7 +289,7 @@ export const resetPassword = async (
     user.password = newPassword;
     await user.save();
 
-    res.status(200).json({ success: true, message: 'Password has been reset successfully' });
+    sendMessage(res, 200, 'Password has been reset successfully');
   } catch (error) {
     next(error);
   }

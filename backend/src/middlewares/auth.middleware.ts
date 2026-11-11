@@ -3,6 +3,7 @@ import { User } from '../models/user.model.js';
 import type { UserRole } from '../models/user.model.js';
 import { verifyToken } from '../utils/token.util.js';
 import { AUTH_COOKIE_NAME } from '../utils/auth-cookie.util.js';
+import { sendError } from '../utils/api-response.util.js';
 
 export type AuthRequest = Request;
 
@@ -17,7 +18,7 @@ export const protect = async (
 ): Promise<void> => {
   const token = req.cookies?.[AUTH_COOKIE_NAME];
   if (typeof token !== 'string' || token.length === 0) {
-    res.status(401).json({ success: false, message: 'Authentication required' });
+    sendError(res, 401, 'Authentication required', { code: 'AUTHENTICATION_REQUIRED' });
     return;
   }
 
@@ -25,14 +26,14 @@ export const protect = async (
   try {
     decoded = verifyToken(token);
   } catch {
-    res.status(401).json({ success: false, message: 'Invalid or expired authentication' });
+    sendError(res, 401, 'Invalid or expired authentication', { code: 'INVALID_AUTHENTICATION' });
     return;
   }
 
   try {
     const user = await User.findById(decoded.id).select('name email role createdAt updatedAt isActive isDeleted deletedAt');
     if (!user || user.isActive !== true || user.isDeleted === true || user.deletedAt != null) {
-      res.status(401).json({ success: false, message: 'Invalid or expired authentication' });
+      sendError(res, 401, 'Invalid or expired authentication', { code: 'INVALID_AUTHENTICATION' });
       return;
     }
 
@@ -59,11 +60,11 @@ export const protect = async (
 export const restrictTo = (...roles: UserRole[]) =>
   (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.authUser) {
-      res.status(401).json({ success: false, message: 'Authentication required' });
+      sendError(res, 401, 'Authentication required', { code: 'AUTHENTICATION_REQUIRED' });
       return;
     }
     if (!roles.includes(req.authUser.role)) {
-      res.status(403).json({ success: false, message: 'Forbidden – insufficient permissions' });
+      sendError(res, 403, 'Forbidden – insufficient permissions', { code: 'FORBIDDEN' });
       return;
     }
     next();

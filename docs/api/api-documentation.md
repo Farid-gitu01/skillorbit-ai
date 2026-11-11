@@ -31,13 +31,15 @@ Registration and login set a stateless JWT in the `skillorbit_access` HttpOnly c
 }
 ```
 
+`message` and `data` are optional for message-only success results. Development-only verification/reset tokens remain nested within `data` and are never returned by production responses.
+
 ### Paginated Success
 
 ```json
 {
   "success": true,
   "data": [ ... ],
-  "pagination": {
+  "meta": {
     "page": 1,
     "limit": 20,
     "total": 142,
@@ -51,7 +53,19 @@ Registration and login set a stateless JWT in the `skillorbit_access` HttpOnly c
 ```json
 {
   "success": false,
-  "message": "Not authorised – invalid token"
+  "message": "Invalid or expired authentication",
+  "code": "INVALID_AUTHENTICATION"
+}
+```
+
+Validation errors retain the current `errors` array at the top level, alongside `success`, `message`, and `code`; each entry contains `field` and `message`:
+
+```json
+{
+  "success": false,
+  "message": "Login validation failed",
+  "code": "VALIDATION_ERROR",
+  "errors": [{ "field": "email", "message": "A valid email address is required" }]
 }
 ```
 
@@ -86,9 +100,12 @@ Registration and login set a stateless JWT in the `skillorbit_access` HttpOnly c
 ```json
 {
   "success": true,
-  "message": "SkillOrbit AI API is running!"
+  "data": { "app": "SkillOrbit AI", "status": "ok", "timestamp": "2026-11-10T12:00:00.000Z", "database": "connected" },
+  "message": "SkillOrbit AI API is healthy"
 }
 ```
+
+If the database is unavailable, health returns `503` with `{ "success": false, "message": "SkillOrbit AI API is degraded", "code": "SERVICE_UNAVAILABLE" }`.
 
 ---
 

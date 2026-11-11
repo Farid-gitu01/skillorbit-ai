@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sendError } from '../utils/api-response.util.js';
+import { asyncHandler } from '../middlewares/async-handler.middleware.js';
 import {
 	login,
 	logout,
@@ -26,9 +28,10 @@ const passwordResetLimiter = rateLimit({
 	standardHeaders: true,
 	legacyHeaders: false,
 	skipSuccessfulRequests: false,
-	message: {
-		success: false,
-		message: 'Too many password reset attempts. Please try again later.',
+	handler: (_req, res) => {
+		sendError(res, 429, 'Too many password reset attempts. Please try again later.', {
+			code: 'PASSWORD_RESET_RATE_LIMITED',
+		});
 	},
 });
 
@@ -38,18 +41,19 @@ const emailVerificationLimiter = rateLimit({
 	standardHeaders: true,
 	legacyHeaders: false,
 	skipSuccessfulRequests: false,
-	message: {
-		success: false,
-		message: 'Too many verification attempts. Please try again later.',
+	handler: (_req, res) => {
+		sendError(res, 429, 'Too many verification attempts. Please try again later.', {
+			code: 'VERIFICATION_RATE_LIMITED',
+		});
 	},
 });
 
-router.post('/register', validateRegistration, register);
-router.post('/login', validateLogin, login);
+router.post('/register', validateRegistration, asyncHandler(register));
+router.post('/login', validateLogin, asyncHandler(login));
 router.post('/logout', logout);
-router.post('/forgot-password', passwordResetLimiter, validatePasswordResetRequest, requestPasswordReset);
-router.post('/reset-password', passwordResetLimiter, validatePasswordReset, resetPassword);
-router.post('/verify-email', emailVerificationLimiter, validateEmailVerification, verifyEmail);
-router.post('/resend-verification', emailVerificationLimiter, validateResendVerification, resendVerificationEmail);
+router.post('/forgot-password', passwordResetLimiter, validatePasswordResetRequest, asyncHandler(requestPasswordReset));
+router.post('/reset-password', passwordResetLimiter, validatePasswordReset, asyncHandler(resetPassword));
+router.post('/verify-email', emailVerificationLimiter, validateEmailVerification, asyncHandler(verifyEmail));
+router.post('/resend-verification', emailVerificationLimiter, validateResendVerification, asyncHandler(resendVerificationEmail));
 
 export default router;

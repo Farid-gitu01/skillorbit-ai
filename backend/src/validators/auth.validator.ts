@@ -1,5 +1,5 @@
-import { type RequestHandler } from 'express';
 import { z } from 'zod';
+import { validateRequest } from '../middlewares/validate-request.middleware.js';
 
 export const passwordSchema = z
 	.string()
@@ -54,76 +54,29 @@ export type EmailVerificationInput = z.infer<typeof emailVerificationSchema>;
 export const resendVerificationSchema = z.object({ email: emailSchema }).strict();
 export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;
 
-const validateSchema = <T>(schema: z.ZodType<T>, message: string): RequestHandler =>
-	(req, res, next) => {
-		const result = schema.safeParse(req.body);
-		if (!result.success) {
-			res.status(400).json({
-				success: false,
-				message,
-				errors: result.error.issues.map((issue) => ({
-					field: issue.path.join('.'),
-					message: issue.message,
-				})),
-			});
-			return;
-		}
-		req.body = result.data;
-		next();
-	};
+export const validateRegistration = validateRequest(
+	{ body: registerSchema },
+	'Registration validation failed'
+);
 
-export const validateRegistration: RequestHandler = (req, res, next) => {
-	const result = registerSchema.safeParse(req.body);
+export const validateLogin = validateRequest({ body: loginSchema }, 'Login validation failed');
 
-	if (!result.success) {
-		res.status(400).json({
-			success: false,
-			message: 'Registration validation failed',
-			errors: result.error.issues.map((issue) => ({
-				field: issue.path.join('.'),
-				message: issue.message,
-			})),
-		});
-		return;
-	}
-
-	// Keep only schema-approved values and apply email/name normalization.
-	req.body = result.data;
-	next();
-};
-
-export const validateLogin: RequestHandler = (req, res, next) => {
-	const result = loginSchema.safeParse(req.body);
-
-	if (!result.success) {
-		res.status(400).json({
-			success: false,
-			message: 'Login validation failed',
-			errors: result.error.issues.map((issue) => ({
-				field: issue.path.join('.'),
-				message: issue.message,
-			})),
-		});
-		return;
-	}
-
-	req.body = result.data;
-	next();
-};
-
-export const validatePasswordResetRequest = validateSchema(
-	passwordResetRequestSchema,
+export const validatePasswordResetRequest = validateRequest(
+	{ body: passwordResetRequestSchema },
 	'Password reset request validation failed'
 );
 
-export const validatePasswordReset = validateSchema(passwordResetSchema, 'Password reset validation failed');
+export const validatePasswordReset = validateRequest(
+	{ body: passwordResetSchema },
+	'Password reset validation failed'
+);
 
-export const validateEmailVerification = validateSchema(
-	emailVerificationSchema,
+export const validateEmailVerification = validateRequest(
+	{ body: emailVerificationSchema },
 	'Email verification validation failed'
 );
 
-export const validateResendVerification = validateSchema(
-	resendVerificationSchema,
+export const validateResendVerification = validateRequest(
+	{ body: resendVerificationSchema },
 	'Verification request validation failed'
 );

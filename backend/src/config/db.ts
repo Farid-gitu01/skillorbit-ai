@@ -6,7 +6,8 @@ const connectDB = async (): Promise<void> => {
 
     console.log('MongoDB connected successfully')
   } catch (error) {
-    console.error('MongoDB connection failed:', error)
+    const errorName = error instanceof Error ? error.name : 'UnknownError'
+    console.error('MongoDB connection failed:', errorName)
     process.exit(1)
   }
 }

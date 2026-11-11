@@ -1,4 +1,5 @@
 import { type Request, type Response, type NextFunction } from 'express';
+import { sendError } from '../utils/api-response.util.js';
 
 /**
  * notFound — 404 middleware
@@ -12,8 +13,5 @@ export const notFound = (
   res: Response,
   _next: NextFunction
 ): void => {
-  res.status(404).json({
-    success: false,
-    message: `Route not found: ${req.method} ${req.originalUrl}`,
-  });
+  sendError(res, 404, `Route not found: ${req.method} ${req.path}`, { code: 'ROUTE_NOT_FOUND' });
 };

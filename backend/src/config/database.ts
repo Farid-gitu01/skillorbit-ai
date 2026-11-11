@@ -46,11 +46,11 @@ const connectDatabase = async (): Promise<void> => {
     });
 
     mongoose.connection.on('error', (err: Error) => {
-      console.error('[db] MongoDB connection error:', err.message);
+      console.error('[db] MongoDB connection error:', err.name);
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[db] FATAL: MongoDB connection failed — ${message}`);
+    const errorName = error instanceof Error ? error.name : 'UnknownError';
+    console.error(`[db] FATAL: MongoDB connection failed — ${errorName}`);
     // Exit so that the process manager (PM2 / Docker) can restart cleanly
     process.exit(1);
   }
