@@ -15,6 +15,13 @@ export interface IAIMatchDetails {
   summary?: string;
 }
 
+export interface IApplicationHistoryItem {
+  status: ApplicationStatus;
+  changedBy?: mongoose.Types.ObjectId;
+  note?: string;
+  changedAt: Date;
+}
+
 export interface IApplication extends Document {
   seeker: mongoose.Types.ObjectId;
   job: mongoose.Types.ObjectId;
@@ -24,6 +31,7 @@ export interface IApplication extends Document {
   aiMatchScore?: number;
   aiMatchDetails?: IAIMatchDetails;
   employerNote?: string;
+  statusHistory: IApplicationHistoryItem[];
   withdrawnAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -35,6 +43,20 @@ const aiMatchDetailsSchema = new Schema<IAIMatchDetails>(
     missingSkills: { type: [String], default: [] },
     experienceMatch: { type: Boolean },
     summary: { type: String },
+  },
+  { _id: false }
+);
+
+const statusHistorySchema = new Schema<IApplicationHistoryItem>(
+  {
+    status: {
+      type: String,
+      enum: ['pending', 'reviewed', 'shortlisted', 'accepted', 'rejected', 'withdrawn'] as const,
+      required: true,
+    },
+    changedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    note: { type: String, maxlength: 1000 },
+    changedAt: { type: Date, default: Date.now },
   },
   { _id: false }
 );
@@ -53,6 +75,7 @@ const applicationSchema = new Schema<IApplication>(
     aiMatchScore: { type: Number, min: 0, max: 100 },
     aiMatchDetails: { type: aiMatchDetailsSchema },
     employerNote: { type: String, maxlength: 1000 },
+    statusHistory: { type: [statusHistorySchema], default: [] },
     withdrawnAt: { type: Date },
   },
   { timestamps: true }

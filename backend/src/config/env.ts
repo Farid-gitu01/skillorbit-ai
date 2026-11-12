@@ -28,6 +28,10 @@ interface Env {
   EMAIL_FROM?: string;
   AI_PROVIDER: string | undefined;
   AI_API_KEY: string | undefined;
+  AI_MODEL: string | undefined;
+  AI_BASE_URL: string | undefined;
+  AI_TIMEOUT_MS: number | undefined;
+  AI_MAX_RETRIES: number | undefined;
 }
 
 function assertRequired(name: string, value: string | undefined): string {
@@ -149,6 +153,21 @@ function parseSmtpSettings(nodeEnv: NodeEnv) {
   };
 }
 
+function parseOptionalAiInteger(name: string, raw: string | undefined): number | undefined {
+  const trimmed = raw?.trim();
+  if (!trimmed) return undefined;
+  if (!/^-?\d+$/.test(trimmed)) {
+    console.warn(`[env] WARNING: ${name} is not a valid integer. AI configuration will be marked invalid.`);
+    return Number.NaN;
+  }
+  const parsed = Number.parseInt(trimmed, 10);
+  if (!Number.isSafeInteger(parsed)) {
+    console.warn(`[env] WARNING: ${name} is out of safe integer range. AI configuration will be marked invalid.`);
+    return Number.NaN;
+  }
+  return parsed;
+}
+
 const jwtExpiration = parseJwtExpiration(process.env.JWT_EXPIRES_IN);
 const nodeEnv = parseNodeEnv(process.env.NODE_ENV);
 const port = parsePort(process.env.PORT);
@@ -163,8 +182,12 @@ export const env: Env = {
   JWT_EXPIRES_IN_SECONDS: jwtExpiration.seconds,
   CLIENT_URL: process.env.CLIENT_URL ?? 'http://localhost:5173',
   ...smtpSettings,
-  AI_PROVIDER: process.env.AI_PROVIDER || undefined,
-  AI_API_KEY: process.env.AI_API_KEY || undefined,
+  AI_PROVIDER: process.env.AI_PROVIDER?.trim() || undefined,
+  AI_API_KEY: process.env.AI_API_KEY?.trim() || undefined,
+  AI_MODEL: process.env.AI_MODEL?.trim() || undefined,
+  AI_BASE_URL: process.env.AI_BASE_URL?.trim() || undefined,
+  AI_TIMEOUT_MS: parseOptionalAiInteger('AI_TIMEOUT_MS', process.env.AI_TIMEOUT_MS),
+  AI_MAX_RETRIES: parseOptionalAiInteger('AI_MAX_RETRIES', process.env.AI_MAX_RETRIES),
 };
 
 // Warn (not crash) when AI config is absent — it is optional until the AI service is activated

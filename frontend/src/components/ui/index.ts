@@ -1,7 +1,7 @@
-/**
- * UI Primitives — SkillOrbit AI Component Library
- *
- * Future atomic primitives (Button, Input, Card, Badge, Modal, etc.)
- * will be exported from here as established in Phase 2.0.4.
- */
-export {};
+export { Button, type ButtonProps } from './Button';
+export { Input, type InputProps } from './Input';
+export { Select, type SelectProps, type SelectOption } from './Select';
+export { Alert, type AlertProps } from './Alert';
+export { Card, type CardProps, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './Card';
+export { Badge, type BadgeProps, type BadgeVariant } from './Badge';
+export { Skeleton, type SkeletonProps } from './Skeleton';

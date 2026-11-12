@@ -9,6 +9,9 @@ export interface IUser extends Document {
   password: string;
   role: UserRole;
   isActive: boolean;
+  suspensionReason?: string;
+  suspendedAt?: Date;
+  suspendedBy?: mongoose.Types.ObjectId;
   isEmailVerified: boolean;
   lastLoginAt?: Date;
   isDeleted: boolean;
@@ -33,6 +36,9 @@ const userSchema = new Schema<IUser>(
       default: 'seeker',
     },
     isActive: { type: Boolean, default: true },
+    suspensionReason: { type: String, trim: true, maxlength: 1000 },
+    suspendedAt: { type: Date },
+    suspendedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     isEmailVerified: { type: Boolean, default: false },
     lastLoginAt: { type: Date },
     isDeleted: { type: Boolean, default: false },

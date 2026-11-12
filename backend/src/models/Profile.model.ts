@@ -32,7 +32,9 @@ export interface IProfile extends Document {
   portfolioUrl?: string;
   experience: IExperience[];
   education: IEducation[];
+  skills: string[];
   languages: string[];
+  savedJobs: mongoose.Types.ObjectId[];
   availability?: AvailabilityStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -75,7 +77,9 @@ const profileSchema = new Schema<IProfile>(
     portfolioUrl: { type: String, trim: true },
     experience: { type: [experienceSchema], default: [] },
     education: { type: [educationSchema], default: [] },
+    skills: { type: [String], default: [] },
     languages: { type: [String], default: [] },
+    savedJobs: { type: [Schema.Types.ObjectId], ref: 'Job', default: [] },
     availability: {
       type: String,
       enum: ['immediate', '2-weeks', '1-month', 'not-looking'] as const,

@@ -1,1 +1,11 @@
-export { api, default, ApiClientError, normalizeApiError } from './api';
+export { api, default as apiClient, ApiClientError, normalizeApiError } from './api';
+export { authService, default as auth } from './auth.service';
+export { profileService } from './profile.service';
+export { resumeService } from './resume.service';
+export { jobService } from './job.service';
+export { applicationService } from './application.service';
+export { notificationService } from './notification.service';
+export { seekerService } from './seeker.service';
+export { employerService } from './employer.service';
+export { providerService } from './provider.service';
+export { adminService } from './admin.service';

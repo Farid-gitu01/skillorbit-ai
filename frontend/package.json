@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --experimental-strip-types --test test/auth-validation.test.ts test/seeker-helpers.test.ts test/employer-helpers.test.ts test/provider-helpers.test.ts test/admin-helpers.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.2",

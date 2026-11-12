@@ -69,3 +69,41 @@ export const restrictTo = (...roles: UserRole[]) =>
     }
     next();
   };
+
+/**
+ * optionalProtect — parses the HttpOnly-cookie JWT if present, attaching safe identity
+ * to the request, but does NOT reject unauthenticated requests.
+ */
+export const optionalProtect = async (
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const token = req.cookies?.[AUTH_COOKIE_NAME];
+  if (typeof token !== 'string' || token.length === 0) {
+    next();
+    return;
+  }
+
+  try {
+    const decoded = verifyToken(token);
+    const user = await User.findById(decoded.id).select('name email role createdAt updatedAt isActive isDeleted deletedAt');
+    if (user && user.isActive === true && !user.isDeleted && user.deletedAt == null) {
+      req.userId = user.id;
+      req.userRole = user.role;
+      req.authUser = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      };
+    }
+  } catch {
+    // Continue unauthenticated on bad token
+  }
+
+  next();
+};
+

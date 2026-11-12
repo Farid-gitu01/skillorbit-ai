@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type AxiosInstance } from 'axios';
 import type { ApiErrorResponse } from '../types/api.types';
 
-const baseURL: string = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api';
+const baseURL: string = import.meta.env?.VITE_API_BASE_URL ?? 'http://localhost:5000/api';
 
 /**
  * SkillOrbit AI centralized Axios HTTP client.
@@ -99,8 +99,7 @@ export function normalizeApiError(error: unknown): ApiClientError {
 // Request interceptor foundation
 api.interceptors.request.use(
   (config) => {
-    // Note: HttpOnly cookie authentication is used.
-    // Never store or inject Bearer JWT tokens from localStorage/sessionStorage.
+    // Note: HttpOnly cookie authentication is used. Session cookies are attached automatically.
     return config;
   },
   (error) => Promise.reject(error)

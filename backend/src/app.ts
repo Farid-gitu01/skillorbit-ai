@@ -55,9 +55,9 @@ app.use(
   })
 );
 
-// ── Request body parsing (10 KB limit) ───────────────────────────────────────
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// ── Request body parsing (64 KB limit) ───────────────────────────────────────
+app.use(express.json({ limit: '64kb' }));
+app.use(express.urlencoded({ extended: true, limit: '64kb' }));
 app.use(cookieParser());
 
 // ── Request sanitization (NoSQL injection defense) ──────────────────────────

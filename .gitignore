@@ -77,6 +77,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # ── Temporary & Cache Files ───────────────────────────────────────────────────
+uploads/
+*/uploads/
 *.tmp
 *.temp
 .temp/

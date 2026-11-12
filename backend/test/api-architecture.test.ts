@@ -229,6 +229,6 @@ test('protected user route and unknown routes retain their expected behavior', a
   });
   assert.ok(!JSON.stringify(unknownBody).includes('sensitive-test-token'));
 
-  const noFakeJobsRoute = await fetch(`${baseUrl}/jobs`);
-  assert.equal(noFakeJobsRoute.status, 404);
+  const unimplementedModuleRoute = await fetch(`${baseUrl}/learning-roadmaps`);
+  assert.equal(unimplementedModuleRoute.status, 404);
 });

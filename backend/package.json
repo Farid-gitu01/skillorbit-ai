@@ -8,8 +8,9 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "bootstrap:admin": "tsx src/scripts/bootstrap-admin.ts",
     "type-check": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
-    "test": "tsx --test test/authentication.test.ts test/api-architecture.test.ts test/request-validation.test.ts test/api-response.test.ts test/error-handling.test.ts test/security.test.ts"
+    "test": "tsx --test test/authentication.test.ts test/api-architecture.test.ts test/request-validation.test.ts test/api-response.test.ts test/error-handling.test.ts test/security.test.ts test/seeker.test.ts test/employer.test.ts test/provider.test.ts test/admin.test.ts test/admin-bootstrap.test.ts test/ai-provider.test.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

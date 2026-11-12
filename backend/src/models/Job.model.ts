@@ -4,6 +4,14 @@ export type JobLocationType = 'on-site' | 'remote' | 'hybrid';
 export type JobType = 'full-time' | 'part-time' | 'contract' | 'internship' | 'freelance';
 export type ExperienceLevel = 'entry' | 'mid' | 'senior' | 'lead' | 'executive';
 export type JobStatus = 'draft' | 'active' | 'closed' | 'expired';
+export type JobModerationStatus = 'approved' | 'flagged' | 'rejected';
+
+export interface IJobModerationHistoryItem {
+  status: JobModerationStatus;
+  reason?: string;
+  changedBy?: mongoose.Types.ObjectId;
+  changedAt: Date;
+}
 
 export interface ISalary {
   min?: number;
@@ -17,15 +25,23 @@ export interface IJob extends Document {
   organization?: mongoose.Types.ObjectId;
   title: string;
   description: string;
+  responsibilities: string[];
+  qualifications: string[];
   skills: mongoose.Types.ObjectId[];
   location?: string;
   locationType?: JobLocationType;
   type?: JobType;
   salary?: ISalary;
   experienceLevel?: ExperienceLevel;
+  openings: number;
   applicationDeadline?: Date;
   applicantCount: number;
   status: JobStatus;
+  moderationStatus?: JobModerationStatus;
+  moderationReason?: string;
+  moderatedBy?: mongoose.Types.ObjectId;
+  moderatedAt?: Date;
+  moderationHistory?: IJobModerationHistoryItem[];
   isDeleted: boolean;
   deletedAt?: Date;
   createdAt: Date;
@@ -48,6 +64,8 @@ const jobSchema = new Schema<IJob>(
     organization: { type: Schema.Types.ObjectId, ref: 'Organization' },
     title: { type: String, required: true, trim: true, maxlength: 200 },
     description: { type: String, required: true, maxlength: 10000 },
+    responsibilities: { type: [String], default: [] },
+    qualifications: { type: [String], default: [] },
     skills: { type: [Schema.Types.ObjectId], ref: 'Skill', default: [] },
     location: { type: String, trim: true, maxlength: 200 },
     locationType: {
@@ -63,12 +81,36 @@ const jobSchema = new Schema<IJob>(
       type: String,
       enum: ['entry', 'mid', 'senior', 'lead', 'executive'] as const,
     },
+    openings: { type: Number, default: 1, min: 1, max: 1000 },
     applicationDeadline: { type: Date },
     applicantCount: { type: Number, default: 0, min: 0 },
     status: {
       type: String,
       enum: ['draft', 'active', 'closed', 'expired'] as const,
       default: 'draft',
+    },
+    moderationStatus: {
+      type: String,
+      enum: ['approved', 'flagged', 'rejected'] as const,
+      default: 'approved',
+    },
+    moderationReason: { type: String, trim: true, maxlength: 1000 },
+    moderatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    moderatedAt: { type: Date },
+    moderationHistory: {
+      type: [
+        {
+          status: {
+            type: String,
+            enum: ['approved', 'flagged', 'rejected'] as const,
+            required: true,
+          },
+          reason: { type: String, trim: true, maxlength: 1000 },
+          changedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+          changedAt: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
     },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },

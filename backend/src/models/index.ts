@@ -17,7 +17,7 @@ export { Profile } from './Profile.model.js';
 export type { IProfile, IExperience, IEducation, AvailabilityStatus } from './Profile.model.js';
 
 export { Organization } from './Organization.model.js';
-export type { IOrganization, OrganizationType, OrganizationSize } from './Organization.model.js';
+export type { IOrganization, ISocialLinks, OrganizationType, OrganizationSize } from './Organization.model.js';
 
 // ── Skill taxonomy ───────────────────────────────────────────────────────────
 export { Skill } from './Skill.model.js';
@@ -44,7 +44,7 @@ export { Job } from './Job.model.js';
 export type { IJob, JobLocationType, JobType, ExperienceLevel, JobStatus, ISalary } from './Job.model.js';
 
 export { Application } from './Application.model.js';
-export type { IApplication, ApplicationStatus, IAIMatchDetails } from './Application.model.js';
+export type { IApplication, ApplicationStatus, IAIMatchDetails, IApplicationHistoryItem } from './Application.model.js';
 
 // ── System ────────────────────────────────────────────────────────────────────
 export { Notification } from './Notification.model.js';
