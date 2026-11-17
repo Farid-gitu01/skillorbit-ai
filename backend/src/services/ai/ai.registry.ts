@@ -5,6 +5,7 @@ import {
   type AiProviderConfig,
 } from './ai.types.js';
 import { AnthropicProviderAdapter } from './providers/anthropic.provider.js';
+import { GeminiProviderAdapter } from './providers/gemini.provider.js';
 import { OpenAiProviderAdapter } from './providers/openai.provider.js';
 
 export type AiProviderFactory = (
@@ -24,6 +25,7 @@ export class AiProviderRegistry {
       this.register('openai', (config, deps) => new OpenAiProviderAdapter(config, deps));
       this.register('openai-compatible', (config, deps) => new OpenAiProviderAdapter(config, deps));
       this.register('anthropic', (config, deps) => new AnthropicProviderAdapter(config, deps));
+      this.register('gemini', (config, deps) => new GeminiProviderAdapter(config, deps));
     }
   }
 

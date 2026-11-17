@@ -99,3 +99,15 @@ export const emailVerificationLimiter = createApiLimiter({
   code: 'VERIFICATION_RATE_LIMITED',
   message: 'Too many verification attempts. Please try again later.',
 });
+
+/**
+ * AI feature generation rate limiter: 20 requests per minute per IP.
+ * Protects costly AI endpoints from abuse while allowing interactive usage.
+ */
+export const aiFeatureLimiter = createApiLimiter({
+  windowMs: 60 * 1000,
+  max: 20,
+  skipSuccessfulRequests: false,
+  code: 'AI_RATE_LIMITED',
+  message: 'Too many AI requests in a short period. Please wait a minute and try again.',
+});

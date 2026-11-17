@@ -22,9 +22,16 @@ export const MAX_AI_TIMEOUT_MS = 120_000;
 export const DEFAULT_AI_MAX_RETRIES = 1;
 export const MAX_AI_MAX_RETRIES = 3;
 
+export const DEFAULT_AI_MAX_TOKENS = 1024;
+export const MAX_AI_MAX_TOKENS = 32_768;
+
+export const DEFAULT_AI_MAX_OUTPUT_CHARS = 32_000;
+export const MAX_AI_MAX_OUTPUT_CHARS = 100_000;
+
 export const DOCUMENTED_PROVIDER_BASE_URLS: Readonly<Record<string, string>> = {
   openai: 'https://api.openai.com/v1',
   anthropic: 'https://api.anthropic.com/v1',
+  gemini: 'https://generativelanguage.googleapis.com/v1beta',
 };
 
 const normalizedBaseUrlSchema = z
@@ -66,10 +73,12 @@ export const aiCompletionRequestSchema = z
       .min(1, 'At least one message is required')
       .max(50, 'Request exceeds maximum supported message count'),
     model: aiModelSchema.optional(),
-    maxTokens: z.number().int().min(1).max(32_768).optional(),
+    maxTokens: z.number().int().min(1).max(MAX_AI_MAX_TOKENS).optional(),
     temperature: z.number().min(0).max(2).optional(),
     timeoutMs: z.number().int().min(MIN_AI_TIMEOUT_MS).max(MAX_AI_TIMEOUT_MS).optional(),
     requestId: z.string().trim().min(1).max(128).optional(),
+    feature: z.string().trim().min(1).max(80).optional(),
+    maxOutputChars: z.number().int().min(64).max(MAX_AI_MAX_OUTPUT_CHARS).optional(),
   })
   .strict();
 
@@ -119,7 +128,7 @@ function parseBoundedInteger(
  */
 export function inspectAiConfig(
   source: RawAiConfigInput = readDefaultEnvSource(),
-  supportedProviders: ReadonlyArray<string> = ['openai', 'openai-compatible', 'anthropic']
+  supportedProviders: ReadonlyArray<string> = ['openai', 'openai-compatible', 'anthropic', 'gemini']
 ): AiConfigInspection {
   const providerRaw = source.provider?.trim().toLowerCase();
   const apiKeyRaw = source.apiKey?.trim();

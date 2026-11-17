@@ -10,3 +10,4 @@ export * from './seeker-dashboard.types';
 export * from './employer.types';
 export * from './provider.types';
 export * from './admin.types';
+export * from './ai.types';

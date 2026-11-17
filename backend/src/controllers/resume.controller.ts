@@ -4,6 +4,7 @@ import { type Request, type Response } from 'express';
 import { Application } from '../models/Application.model.js';
 import { Job } from '../models/Job.model.js';
 import { Resume } from '../models/Resume.model.js';
+import { extractResumeTextFromDisk } from '../services/ai/utils/resume-extractor.js';
 import { sendCreated, sendError, sendSuccess } from '../utils/api-response.util.js';
 
 export const getMyResumes = async (req: Request, res: Response): Promise<void> => {
@@ -30,6 +31,26 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
     return;
   }
 
+  let extractedText: string;
+  try {
+    const extracted = await extractResumeTextFromDisk({
+      storedFileName: file.filename,
+      originalFileName: file.originalname,
+      mimeType: file.mimetype,
+    });
+    extractedText = extracted.text;
+  } catch (error) {
+    const filePath = path.resolve(process.cwd(), 'uploads', 'resumes', path.basename(file.filename));
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch {
+      // Best-effort cleanup of invalid upload
+    }
+    throw error;
+  }
+
   // Check if user has other resumes; if none, make this primary
   const existingCount = await Resume.countDocuments({ user: userId });
   const isPrimary = existingCount === 0 || req.body?.isPrimary === 'true' || req.body?.isPrimary === true;
@@ -50,11 +71,13 @@ export const uploadResume = async (req: Request, res: Response): Promise<void> =
     parsedData: {
       extractedSkills: [],
       summary: `Uploaded ${file.originalname}`,
+      rawText: extractedText,
     },
     parsedAt: new Date(),
   });
 
-  sendCreated(res, { resume }, 'Resume uploaded successfully');
+  const safeResume = await Resume.findById(resume._id);
+  sendCreated(res, { resume: safeResume ?? resume }, 'Resume uploaded successfully');
 };
 
 export const downloadResume = async (req: Request, res: Response): Promise<void> => {

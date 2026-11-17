@@ -13,6 +13,7 @@ import employerRoutes from './employer.routes.js';
 import providerRoutes from './provider.routes.js';
 import courseRoutes from './course.routes.js';
 import adminRoutes from './admin.routes.js';
+import aiRoutes from './ai.routes.js';
 import { authLimiter } from '../middlewares/rate-limit.middleware.js';
 
 const router = Router();
@@ -31,5 +32,6 @@ router.use('/employer', employerRoutes);
 router.use('/provider', providerRoutes);
 router.use('/courses', courseRoutes);
 router.use('/admin', adminRoutes);
+router.use('/ai', aiRoutes);
 
 export default router;

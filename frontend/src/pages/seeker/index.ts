@@ -6,3 +6,7 @@ export { JobDetailsPage } from './JobDetailsPage';
 export { ApplicationManagementPage } from './ApplicationManagementPage';
 export { SavedJobsPage } from './SavedJobsPage';
 export { NotificationsPage } from './NotificationsPage';
+export { AiResumeAnalysisPage } from './AiResumeAnalysisPage';
+export { AiSkillGapRoadmapPage } from './AiSkillGapRoadmapPage';
+export { AiJobInsightsPage } from './AiJobInsightsPage';
+export { AiCareerAssistantPage } from './AiCareerAssistantPage';

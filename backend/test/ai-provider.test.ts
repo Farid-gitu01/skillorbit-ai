@@ -30,6 +30,7 @@ const {
   AiProviderError,
   AiProviderRegistry,
   AnthropicProviderAdapter,
+  GeminiProviderAdapter,
   OpenAiProviderAdapter,
   analyzeResume,
   createAiHealthService,
@@ -234,6 +235,15 @@ test('Provider registry selects built-in adapters, rejects unknown providers, an
     maxRetries: 0,
   });
   assert.ok(anthropicAdapter instanceof AnthropicProviderAdapter);
+
+  const geminiAdapter = registry.createAdapter({
+    provider: 'gemini',
+    apiKey: 'AIzaSyFakeGeminiKeyForUnitTestsOnly12345',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+    timeoutMs: 5000,
+    maxRetries: 0,
+  });
+  assert.ok(geminiAdapter instanceof GeminiProviderAdapter);
 
   assert.throws(
     () =>
@@ -653,4 +663,106 @@ test('GET /api/admin/ai/health enforces Admin RBAC and returns sanitized non-sec
   } finally {
     (User as any).findById = origFindById;
   }
+});
+
+test('Gemini provider configuration, adapter contract, and secret redaction', async () => {
+  const fakeGeminiKey = 'AIzaSyFakeGeminiKeyForUnitTestsOnly12345';
+
+  const resolved = resolveAiConfig({
+    provider: 'gemini',
+    apiKey: fakeGeminiKey,
+    model: 'gemini-flash-latest',
+  });
+  assert.equal(resolved.provider, 'gemini');
+  assert.equal(resolved.baseUrl, 'https://generativelanguage.googleapis.com/v1beta');
+  assert.equal(resolved.model, 'gemini-flash-latest');
+
+  const recordedCalls: Array<{ url: string; method: string; headers: Record<string, string>; body?: string }> = [];
+  const adapter = new GeminiProviderAdapter(resolved, {
+    httpClient: (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      const headersRecord = Object.fromEntries(new Headers(init?.headers).entries());
+      recordedCalls.push({
+        url,
+        method: init?.method ?? 'GET',
+        headers: headersRecord,
+        body: typeof init?.body === 'string' ? init.body : undefined,
+      });
+
+      if (url.endsWith('/models')) {
+        return makeJsonResponse(200, {
+          models: [{ name: 'models/gemini-flash-latest' }, { name: 'models/gemini-2.5-pro' }],
+        });
+      }
+
+      return makeJsonResponse(200, {
+        modelVersion: 'gemini-flash-latest',
+        candidates: [
+          {
+            content: { parts: [{ text: 'Hello from Gemini adapter.' }] },
+            finishReason: 'STOP',
+          },
+        ],
+        usageMetadata: {
+          promptTokenCount: 12,
+          candidatesTokenCount: 6,
+          totalTokenCount: 18,
+        },
+      });
+    }) as typeof fetch,
+  });
+
+  const conn = await adapter.checkConnection();
+  assert.equal(conn.connected, true);
+  assert.equal(conn.provider, 'gemini');
+  assert.equal(conn.modelCount, 2);
+  assert.equal(recordedCalls[0].url, 'https://generativelanguage.googleapis.com/v1beta/models');
+  assert.equal(recordedCalls[0].headers['x-goog-api-key'], fakeGeminiKey);
+
+  const completion = await adapter.complete({
+    requestId: 'req-gemini-1',
+    maxTokens: 128,
+    temperature: 0.2,
+    messages: [
+      { role: 'system', content: 'Be concise.' },
+      { role: 'user', content: 'Hi' },
+      { role: 'assistant', content: 'Hello' },
+      { role: 'user', content: 'Confirm readiness.' },
+    ],
+  });
+
+  assert.equal(completion.provider, 'gemini');
+  assert.equal(completion.model, 'gemini-flash-latest');
+  assert.equal(completion.content, 'Hello from Gemini adapter.');
+  assert.equal(completion.finishReason, 'STOP');
+  assert.deepEqual(completion.usage, { inputTokens: 12, outputTokens: 6, totalTokens: 18 });
+  assert.equal(completion.requestId, 'req-gemini-1');
+
+  assert.equal(
+    recordedCalls[1].url,
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent'
+  );
+  const parsedBody = JSON.parse(recordedCalls[1].body!);
+  assert.deepEqual(parsedBody.systemInstruction, { parts: [{ text: 'Be concise.' }] });
+  assert.deepEqual(parsedBody.contents, [
+    { role: 'user', parts: [{ text: 'Hi' }] },
+    { role: 'model', parts: [{ text: 'Hello' }] },
+    { role: 'user', parts: [{ text: 'Confirm readiness.' }] },
+  ]);
+  assert.deepEqual(parsedBody.generationConfig, { maxOutputTokens: 128, temperature: 0.2 });
+
+  const noModelAdapter = new GeminiProviderAdapter({
+    provider: 'gemini',
+    apiKey: fakeGeminiKey,
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+    timeoutMs: 5000,
+    maxRetries: 0,
+  });
+  await assert.rejects(
+    () => noModelAdapter.complete({ messages: [{ role: 'user', content: 'Hi' }] }),
+    (err: unknown) => err instanceof AiProviderError && err.code === 'AI_INVALID_CONFIGURATION'
+  );
+
+  const redacted = redactAiSecrets(`Header x-goog-api-key: ${fakeGeminiKey}`);
+  assert.equal(redacted.includes(fakeGeminiKey), false);
 });

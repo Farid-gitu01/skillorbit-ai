@@ -9,3 +9,4 @@ export { seekerService } from './seeker.service';
 export { employerService } from './employer.service';
 export { providerService } from './provider.service';
 export { adminService } from './admin.service';
+export { aiService } from './ai.service';

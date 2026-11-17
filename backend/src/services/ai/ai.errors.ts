@@ -13,7 +13,9 @@ export type AiErrorCode =
   | 'AI_RATE_LIMITED'
   | 'AI_TIMEOUT'
   | 'AI_PROVIDER_UNAVAILABLE'
-  | 'AI_RESPONSE_INVALID';
+  | 'AI_RESPONSE_INVALID'
+  | 'AI_RESPONSE_TOO_LARGE'
+  | 'AI_OUTPUT_VALIDATION_FAILED';
 
 export interface AiProviderErrorOptions {
   code: AiErrorCode;
@@ -77,8 +79,10 @@ export function redactAiSecrets(
   return sanitized
     .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]{6,}/gi, 'Bearer [REDACTED]')
     .replace(/\bsk-(?:ant-|proj-|svcacct-)?[A-Za-z0-9_-]{8,}/g, '[REDACTED_KEY]')
+    .replace(/\bAIza[0-9A-Za-z_-]{20,}/g, '[REDACTED_KEY]')
+    .replace(/\bAQ\.[0-9A-Za-z_-]{20,}/g, '[REDACTED_KEY]')
     .replace(/([?&](?:api_?key|key|token|secret)=)[^&\s]+/gi, '$1[REDACTED]')
-    .replace(/\b(x-api-key|authorization)\s*[:=]\s*([^\s,;]+)/gi, '$1: [REDACTED]');
+    .replace(/\b(x-api-key|x-goog-api-key|authorization)\s*[:=]\s*([^\s,;]+)/gi, '$1: [REDACTED]');
 }
 
 export function parseRetryAfterMs(headerValue: string | null): number | undefined {
@@ -169,5 +173,25 @@ export function mapTransportErrorToAiError(
     statusCode: 503,
     retryable: true,
     provider,
+  });
+}
+
+/**
+ * Safely normalizes any unexpected runtime error thrown during AI orchestration
+ * into a predictable, secret-free AiProviderError without exposing raw details.
+ */
+export function normalizeAiExecutionError(
+  error: unknown,
+  provider?: string
+): AiProviderError {
+  if (error instanceof AiProviderError) {
+    return error;
+  }
+
+  return new AiProviderError('AI service execution failed safely.', {
+    code: 'AI_PROVIDER_UNAVAILABLE',
+    statusCode: 503,
+    retryable: false,
+    ...(provider ? { provider } : {}),
   });
 }

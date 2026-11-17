@@ -2,12 +2,43 @@ import mongoose, { type Document, Schema } from 'mongoose';
 
 export type ParseStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
+export interface IAtsFeedback {
+  estimatedCompletenessScore: number;
+  methodology: string;
+  formattingFindings: string[];
+  keywordObservations: string[];
+  recommendations: string[];
+}
+
+export interface IResumeAnalysis {
+  overview: string;
+  professionalSummary: string;
+  technicalSkills: string[];
+  softSkills: string[];
+  toolsAndTechnologies: string[];
+  frameworksAndLanguages: string[];
+  education: string[];
+  workExperience: string[];
+  projects: string[];
+  certifications: string[];
+  strengths: string[];
+  weaknesses: string[];
+  missingInformation: string[];
+  improvementSuggestions: string[];
+  atsFeedback: IAtsFeedback;
+  analyzedAt: Date;
+  provider: string;
+  model: string;
+  contentHash: string;
+}
+
 export interface IParsedData {
   extractedSkills?: string[];
   yearsOfExperience?: number;
   educationLevel?: string;
   summary?: string;
   rawText?: string;
+  analysis?: IResumeAnalysis;
 }
 
 export interface IResume extends Document {
@@ -24,6 +55,42 @@ export interface IResume extends Document {
   updatedAt: Date;
 }
 
+const atsFeedbackSchema = new Schema<IAtsFeedback>(
+  {
+    estimatedCompletenessScore: { type: Number, min: 0, max: 100, required: true },
+    methodology: { type: String, required: true },
+    formattingFindings: { type: [String], default: [] },
+    keywordObservations: { type: [String], default: [] },
+    recommendations: { type: [String], default: [] },
+  },
+  { _id: false }
+);
+
+const resumeAnalysisSchema = new Schema<IResumeAnalysis>(
+  {
+    overview: { type: String, required: true },
+    professionalSummary: { type: String, required: true },
+    technicalSkills: { type: [String], default: [] },
+    softSkills: { type: [String], default: [] },
+    toolsAndTechnologies: { type: [String], default: [] },
+    frameworksAndLanguages: { type: [String], default: [] },
+    education: { type: [String], default: [] },
+    workExperience: { type: [String], default: [] },
+    projects: { type: [String], default: [] },
+    certifications: { type: [String], default: [] },
+    strengths: { type: [String], default: [] },
+    weaknesses: { type: [String], default: [] },
+    missingInformation: { type: [String], default: [] },
+    improvementSuggestions: { type: [String], default: [] },
+    atsFeedback: { type: atsFeedbackSchema, required: true },
+    analyzedAt: { type: Date, required: true },
+    provider: { type: String, required: true },
+    model: { type: String, required: true },
+    contentHash: { type: String, required: true },
+  },
+  { _id: false }
+);
+
 const parsedDataSchema = new Schema<IParsedData>(
   {
     extractedSkills: { type: [String], default: [] },
@@ -32,6 +99,7 @@ const parsedDataSchema = new Schema<IParsedData>(
     summary: { type: String },
     // rawText is intentionally select:false to avoid leaking PII in list queries
     rawText: { type: String, select: false },
+    analysis: { type: resumeAnalysisSchema },
   },
   { _id: false }
 );

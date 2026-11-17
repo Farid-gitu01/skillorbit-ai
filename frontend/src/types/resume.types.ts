@@ -1,3 +1,5 @@
+import type { ResumeAnalysisData } from './ai.types';
+
 export type ParseStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export interface ParsedResumeData {
@@ -5,6 +7,7 @@ export interface ParsedResumeData {
   yearsOfExperience?: number;
   educationLevel?: string;
   summary?: string;
+  analysis?: ResumeAnalysisData;
 }
 
 export interface Resume {

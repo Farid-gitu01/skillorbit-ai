@@ -1,5 +1,14 @@
-import { inspectAiConfig, resolveAiConfig, validateAiCompletionRequest } from './ai.config.js';
+import { type z } from 'zod';
+import { inspectAiConfig } from './ai.config.js';
 import { AiHealthService, type AiHealthCheckOptions } from './ai.health.js';
+import {
+  AiExecutionPipeline,
+  type ExecutePromptOptions,
+  type ExecuteStructuredPromptOptions,
+  type ExecuteStructuredRequest,
+  type ExecuteTextRequest,
+} from './ai.pipeline.js';
+import { AiPromptRegistry } from './ai.prompts.js';
 import { defaultAiRegistry, type AiProviderRegistry } from './ai.registry.js';
 import {
   type AiAdapterDependencies,
@@ -7,28 +16,54 @@ import {
   type AiCompletionResponse,
   type AiConfigInspection,
   type AiHealthReport,
-  type AiProviderAdapter,
+  type AiStructuredExecutionResult,
+  type AiTextExecutionResult,
+  type AiUsageRecord,
+  type AiUsageSummary,
+  type AiUsageTracker,
   type RawAiConfigInput,
 } from './ai.types.js';
+import { InMemoryAiUsageTracker } from './ai.usage.js';
 
 export interface AiServiceOptions {
   configSource?: RawAiConfigInput | (() => RawAiConfigInput);
   registry?: AiProviderRegistry;
   adapterDeps?: AiAdapterDependencies;
+  usageTracker?: AiUsageTracker;
+  promptRegistry?: AiPromptRegistry;
   healthCacheTtlMs?: number;
   now?: () => number;
 }
 
+export interface ExecuteRegisteredPromptOptions {
+  promptId: string;
+  version?: string;
+  input: unknown;
+  model?: string;
+  maxTokens?: number;
+  temperature?: number;
+  timeoutMs?: number;
+  maxOutputChars?: number;
+  requestId?: string;
+}
+
+export interface ExecuteRegisteredStructuredPromptOptions<TSchema extends z.ZodTypeAny>
+  extends ExecuteRegisteredPromptOptions {
+  schema: TSchema;
+}
+
 /**
- * Backend-only AI service gateway.
- * Decouples application callers from concrete AI SDKs/APIs while handling
- * unconfigured and unavailable states gracefully without crashing startup.
+ * Centralized backend-only AI orchestration gateway.
+ * Coordinates configuration inspection, health probes, versioned prompts,
+ * provider-independent execution, structured JSON validation, and usage telemetry.
  */
 export class AiService {
   private readonly getConfigSource: (() => RawAiConfigInput) | undefined;
   private readonly registry: AiProviderRegistry;
-  private readonly adapterDeps: AiAdapterDependencies;
+  private readonly usageTracker: AiUsageTracker;
+  private readonly promptRegistry: AiPromptRegistry;
   private readonly healthService: AiHealthService;
+  private readonly pipeline: AiExecutionPipeline;
 
   constructor(options: AiServiceOptions = {}) {
     if (typeof options.configSource === 'function') {
@@ -39,22 +74,30 @@ export class AiService {
     }
 
     this.registry = options.registry ?? defaultAiRegistry;
-    this.adapterDeps = options.adapterDeps ?? {};
+    this.usageTracker = options.usageTracker ?? new InMemoryAiUsageTracker();
+    this.promptRegistry = options.promptRegistry ?? new AiPromptRegistry();
+
+    const adapterDeps = options.adapterDeps ?? {};
+
     this.healthService = new AiHealthService({
       configSource: this.getConfigSource,
       registry: this.registry,
-      adapterDeps: this.adapterDeps,
+      adapterDeps,
       cacheTtlMs: options.healthCacheTtlMs,
+      now: options.now,
+    });
+
+    this.pipeline = new AiExecutionPipeline({
+      getConfigSource: this.getConfigSource,
+      registry: this.registry,
+      adapterDeps,
+      usageTracker: this.usageTracker,
       now: options.now,
     });
   }
 
-  private resolveAdapter(): AiProviderAdapter {
-    const supported = this.registry.getSupportedProviders();
-    const config = this.getConfigSource
-      ? resolveAiConfig(this.getConfigSource(), supported)
-      : resolveAiConfig(undefined, supported);
-    return this.registry.createAdapter(config, this.adapterDeps);
+  get prompts(): AiPromptRegistry {
+    return this.promptRegistry;
   }
 
   inspectConfiguration(): AiConfigInspection {
@@ -81,9 +124,73 @@ export class AiService {
   }
 
   async complete(request: AiCompletionRequest): Promise<AiCompletionResponse> {
-    const validated = validateAiCompletionRequest(request);
-    const adapter = this.resolveAdapter();
-    return adapter.complete(validated);
+    return this.pipeline.runRawCompletion(request);
+  }
+
+  async executeText(request: ExecuteTextRequest): Promise<AiTextExecutionResult> {
+    return this.pipeline.executeText(request);
+  }
+
+  async executePrompt<TSchema extends z.ZodTypeAny>(
+    options: ExecutePromptOptions<TSchema>
+  ): Promise<AiTextExecutionResult> {
+    return this.pipeline.executePrompt(options);
+  }
+
+  async executeStructured<TSchema extends z.ZodTypeAny>(
+    request: ExecuteStructuredRequest<TSchema>
+  ): Promise<AiStructuredExecutionResult<z.infer<TSchema>>> {
+    return this.pipeline.executeStructured(request);
+  }
+
+  async executeStructuredPrompt<
+    TSchema extends z.ZodTypeAny,
+    TOutSchema extends z.ZodTypeAny,
+  >(
+    options: ExecuteStructuredPromptOptions<TSchema, TOutSchema>
+  ): Promise<AiStructuredExecutionResult<z.infer<TOutSchema>>> {
+    return this.pipeline.executeStructuredPrompt(options);
+  }
+
+  async executeRegisteredPrompt(
+    options: ExecuteRegisteredPromptOptions
+  ): Promise<AiTextExecutionResult> {
+    const template = this.promptRegistry.get(options.promptId, options.version);
+    return this.pipeline.executePrompt({
+      template,
+      input: options.input,
+      model: options.model,
+      maxTokens: options.maxTokens,
+      temperature: options.temperature,
+      timeoutMs: options.timeoutMs,
+      maxOutputChars: options.maxOutputChars,
+      requestId: options.requestId,
+    });
+  }
+
+  async executeRegisteredStructuredPrompt<TSchema extends z.ZodTypeAny>(
+    options: ExecuteRegisteredStructuredPromptOptions<TSchema>
+  ): Promise<AiStructuredExecutionResult<z.infer<TSchema>>> {
+    const template = this.promptRegistry.get(options.promptId, options.version);
+    return this.pipeline.executeStructuredPrompt({
+      template,
+      input: options.input,
+      schema: options.schema,
+      model: options.model,
+      maxTokens: options.maxTokens,
+      temperature: options.temperature,
+      timeoutMs: options.timeoutMs,
+      maxOutputChars: options.maxOutputChars,
+      requestId: options.requestId,
+    });
+  }
+
+  getUsageSummary(): AiUsageSummary | undefined {
+    return this.usageTracker.getSummary?.();
+  }
+
+  getRecentUsage(limit?: number): ReadonlyArray<AiUsageRecord> {
+    return this.usageTracker.getRecent?.(limit) ?? [];
   }
 }
 
@@ -93,7 +200,7 @@ export function createAiService(options: AiServiceOptions = {}): AiService {
 
 export const aiService = new AiService();
 
-// Phase 2.6.2+ business feature stubs — intentionally unimplemented in Phase 2.6.1
+// Future Phase AI business feature stubs — intentionally unimplemented in Phase 2.6.2
 export const analyzeResume = async (_resumeText: string): Promise<Record<string, unknown>> => {
   return {};
 };

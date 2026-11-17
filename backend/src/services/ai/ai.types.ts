@@ -2,13 +2,13 @@
  * Provider-independent AI service contracts and configuration types.
  */
 
-export const BUILTIN_AI_PROVIDERS = ['openai', 'openai-compatible', 'anthropic'] as const;
+export const BUILTIN_AI_PROVIDERS = ['openai', 'openai-compatible', 'anthropic', 'gemini'] as const;
 
 export type BuiltinAiProvider = (typeof BUILTIN_AI_PROVIDERS)[number];
 
 /**
  * Provider identifier string. Built-in adapters cover `openai`, `openai-compatible`,
- * and `anthropic`; custom adapters may also be registered via AiProviderRegistry.
+ * `anthropic`, and `gemini`; custom adapters may also be registered via AiProviderRegistry.
  */
 export type AiProviderName = BuiltinAiProvider | (string & {});
 
@@ -26,6 +26,8 @@ export interface AiCompletionRequest {
   temperature?: number;
   timeoutMs?: number;
   requestId?: string;
+  feature?: string;
+  maxOutputChars?: number;
 }
 
 export interface AiTokenUsage {
@@ -130,4 +132,69 @@ export interface AiProviderAdapter {
   readonly provider: string;
   complete(request: AiCompletionRequest): Promise<AiCompletionResponse>;
   checkConnection(options?: { timeoutMs?: number }): Promise<AiConnectionCheckResult>;
+}
+
+export interface AiExecutionMetadata {
+  requestId: string;
+  feature: string;
+  promptId?: string;
+  promptVersion?: string;
+  provider: string;
+  model: string;
+  timestamp: string;
+  durationMs: number;
+  finishReason?: string;
+  usage?: AiTokenUsage;
+}
+
+export interface AiTextExecutionResult {
+  content: string;
+  metadata: AiExecutionMetadata;
+}
+
+export interface AiStructuredExecutionResult<TData> {
+  data: TData;
+  rawContentLength: number;
+  metadata: AiExecutionMetadata;
+}
+
+export interface AiUsageRecord {
+  requestId: string;
+  feature: string;
+  promptId?: string;
+  promptVersion?: string;
+  provider: string;
+  model: string;
+  timestamp: string;
+  durationMs: number;
+  status: 'success' | 'failure';
+  errorCode?: string;
+  tokenUsage?: AiTokenUsage;
+}
+
+export interface AiUsageBucketSummary {
+  requests: number;
+  successCount: number;
+  failureCount: number;
+  totalDurationMs: number;
+  totalTokens: number;
+}
+
+export interface AiUsageSummary {
+  totalRequests: number;
+  successCount: number;
+  failureCount: number;
+  totalDurationMs: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalTokens: number;
+  byFeature: Record<string, AiUsageBucketSummary>;
+  byProvider: Record<string, AiUsageBucketSummary>;
+}
+
+export interface AiUsageTracker {
+  record(entry: AiUsageRecord): Promise<void> | void;
+  getSummary?(): AiUsageSummary;
+  getRecent?(limit?: number): ReadonlyArray<AiUsageRecord>;
+  clear?(): void;
 }

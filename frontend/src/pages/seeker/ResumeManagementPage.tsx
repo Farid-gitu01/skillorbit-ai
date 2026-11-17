@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef, type ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { resumeService } from '@/services';
 import type { Resume } from '@/types';
 import {
@@ -11,22 +12,17 @@ import {
   CardTitle,
   Skeleton,
 } from '@/components/ui';
+import { validateResumeFile } from '@/utils/ai.utils';
 import { formatDate, formatFileSize } from '@/utils/job-helpers';
 import {
   CheckCircle2,
   Download,
   FileText,
+  Sparkles,
   Star,
   Trash2,
   UploadCloud,
 } from 'lucide-react';
-
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_TYPES = new Set([
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-]);
 
 export function ResumeManagementPage() {
   const [resumes, setResumes] = useState<Resume[]>([]);
@@ -84,14 +80,13 @@ export function ResumeManagementPage() {
     setError(null);
     setSuccessMsg(null);
 
-    if (!ACCEPTED_TYPES.has(file.type)) {
-      setError('Invalid file format. Please upload a PDF, DOC, or DOCX file.');
-      if (fileInputRef.current) fileInputRef.current.value = '';
-      return;
-    }
-
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      setError('File size exceeds the 5MB limit. Please compress or choose a smaller file.');
+    const validation = validateResumeFile({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
+    if (!validation.valid) {
+      setError(validation.error ?? 'Invalid resume file.');
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
@@ -172,11 +167,19 @@ export function ResumeManagementPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-surface-white">Resume Management</h1>
-        <p className="text-xs text-muted-slate">
-          Upload, verify, and manage your resumes for instant job applications
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-surface-white">Resume Management</h1>
+          <p className="text-xs text-muted-slate">
+            Upload, verify, and manage your resumes for instant job applications
+          </p>
+        </div>
+        <Link to="/seeker/ai/resume">
+          <Button type="button" variant="secondary" size="sm" className="gap-1.5">
+            <Sparkles className="w-4 h-4 text-brand-cyan" />
+            <span>AI Resume Analysis</span>
+          </Button>
+        </Link>
       </div>
 
       {error && (
@@ -201,14 +204,14 @@ export function ResumeManagementPage() {
               Upload a new resume
             </h3>
             <p className="text-xs text-muted-slate">
-              Accepted formats: PDF, DOC, DOCX • Maximum size: 5MB
+              Accepted formats: PDF, DOCX • Maximum size: 5MB
             </p>
           </div>
 
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             onChange={handleFileChange}
             className="hidden"
             id="resume-file-upload"

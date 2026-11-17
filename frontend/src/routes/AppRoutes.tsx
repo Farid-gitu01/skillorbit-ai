@@ -17,6 +17,10 @@ import {
   ApplicationManagementPage,
   SavedJobsPage,
   NotificationsPage,
+  AiResumeAnalysisPage,
+  AiSkillGapRoadmapPage,
+  AiJobInsightsPage,
+  AiCareerAssistantPage,
 } from '@/pages/seeker';
 import {
   EmployerDashboardPage,
@@ -165,6 +169,10 @@ export function AppRoutes() {
         <Route path="applications" element={<ApplicationManagementPage />} />
         <Route path="saved-jobs" element={<SavedJobsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="ai/resume" element={<AiResumeAnalysisPage />} />
+        <Route path="ai/skill-gap" element={<AiSkillGapRoadmapPage />} />
+        <Route path="ai/job-matches" element={<AiJobInsightsPage />} />
+        <Route path="ai/assistant" element={<AiCareerAssistantPage />} />
       </Route>
 
       {/* ── Protected Employer Portal ──────────────────────────────────────── */}
