@@ -1,7 +1,10 @@
 import axios, { type AxiosError, type AxiosInstance } from 'axios';
 import type { ApiErrorResponse } from '../types/api.types';
 
-const baseURL: string = import.meta.env?.VITE_API_BASE_URL ?? 'http://localhost:5000/api';
+const baseURL: string =
+  import.meta.env?.VITE_API_BASE_URL ??
+  import.meta.env?.VITE_API_URL ??
+  'http://localhost:5000/api';
 
 /**
  * SkillOrbit AI centralized Axios HTTP client.

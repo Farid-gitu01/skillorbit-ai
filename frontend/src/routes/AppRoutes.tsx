@@ -44,23 +44,9 @@ import {
   ProviderEngagementDetailsPage,
   ProviderNotificationsPage,
 } from '@/pages/provider';
-import {
-  AdminAuditLogsPage,
-  AdminCoursesPage,
-  AdminDashboardPage,
-  AdminEmployerDetailsPage,
-  AdminEmployersPage,
-  AdminJobDetailsPage,
-  AdminJobsPage,
-  AdminNotificationsPage,
-  AdminProviderDetailsPage,
-  AdminProvidersPage,
-  AdminUserDetailsPage,
-  AdminUsersPage,
-  AdminVerificationsPage,
-} from '@/pages/admin';
+import { AdminAuditLogsPage, AdminCoursesPage, AdminDashboardPage, AdminEmployerDetailsPage, AdminEmployersPage, AdminJobDetailsPage, AdminJobsPage, AdminNotificationsPage, AdminProviderDetailsPage, AdminProvidersPage, AdminUserDetailsPage, AdminUsersPage, AdminVerificationsPage } from '@/pages/admin';
+import { LandingPage } from '@/pages/landing';
 import { Button } from '@/components/ui';
-import { ArrowRight, Sparkles, Compass, GraduationCap, Briefcase } from 'lucide-react';
 
 /**
  * AppRoutes — Central declarative route configuration for SkillOrbit AI.
@@ -79,62 +65,7 @@ export function AppRoutes() {
     <Routes>
       {/* ── Public General Routes ─────────────────────────────────────────── */}
       <Route element={<AppLayout />}>
-        <Route
-          index
-          element={
-            <div className="py-12 md:py-20 text-center max-w-3xl mx-auto space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/30 text-xs font-medium text-brand-cyan mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Next-Generation Career Platform</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-surface-white tracking-tight leading-tight">
-                Accelerate Your Career with <span className="text-brand-blue">SkillOrbit AI</span>
-              </h1>
-              <p className="text-sm md:text-base text-muted-slate max-w-xl mx-auto leading-relaxed">
-                Connect talent, employers, and training providers through intelligent skill
-                mapping, AI career advisory, and verified opportunity workflows.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-                <Link to="/register">
-                  <Button variant="primary" size="lg" className="gap-2">
-                    <span>Get Started Free</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </Link>
-                <Link to="/login">
-                  <Button variant="outline" size="lg">
-                    Sign In
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Three role pillars */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-12 text-left">
-                <div className="p-4 rounded-card bg-navy/60 border border-navy-surface space-y-2">
-                  <Compass className="w-5 h-5 text-brand-cyan" />
-                  <h3 className="text-sm font-semibold text-surface-white">Job Seekers</h3>
-                  <p className="text-xs text-muted-slate">
-                    AI resume analysis, skill gap assessment, and personalized job matching.
-                  </p>
-                </div>
-                <div className="p-4 rounded-card bg-navy/60 border border-navy-surface space-y-2">
-                  <Briefcase className="w-5 h-5 text-brand-blue" />
-                  <h3 className="text-sm font-semibold text-surface-white">Employers</h3>
-                  <p className="text-xs text-muted-slate">
-                    Post listings, evaluate candidate AI fit scores, and streamline recruitment.
-                  </p>
-                </div>
-                <div className="p-4 rounded-card bg-navy/60 border border-navy-surface space-y-2">
-                  <GraduationCap className="w-5 h-5 text-brand-purple" />
-                  <h3 className="text-sm font-semibold text-surface-white">Providers</h3>
-                  <p className="text-xs text-muted-slate">
-                    Publish specialized courses, verify certifications, and upskill active talent.
-                  </p>
-                </div>
-              </div>
-            </div>
-          }
-        />
+        <Route index element={<LandingPage />} />
       </Route>
 
       {/* ── Public Authentication Routes ──────────────────────────────────── */}
