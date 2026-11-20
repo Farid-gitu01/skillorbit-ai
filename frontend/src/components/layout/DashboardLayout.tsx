@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import type { UserRole } from '@/types/user.types';
+import { BrandLogo } from '@/components/common';
 import {
   Activity,
   Bell,
@@ -106,15 +107,18 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen flex bg-midnight-navy text-surface-white">
+    <div className="min-h-screen flex bg-[#090B09] text-[#F5F7F2] selection:bg-[#C6F500]/20 selection:text-[#C6F500]">
       {/* Desktop Sidebar */}
-      <aside className="w-64 border-r border-navy-surface bg-navy hidden md:flex flex-col p-4 justify-between shrink-0">
+      <aside className="w-64 border-r border-[#303A2B] bg-[#111611] hidden md:flex flex-col p-4 justify-between shrink-0">
         <div>
-          <Link to="/" className="block font-bold text-lg text-brand-blue mb-6 tracking-wide">
-            SkillOrbit AI
+          <Link to="/" className="block mb-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6F500] rounded-lg">
+            <BrandLogo variant="dark" size="md" />
           </Link>
-          <div className="text-[11px] uppercase tracking-wider text-muted-slate mb-3 px-2 font-semibold">
-            {activeRole ? `${activeRole} Portal` : 'Portal'}
+
+          <div className="mb-4">
+            <span className="text-[10px] uppercase tracking-wider text-[#C6F500] bg-[#C6F500]/10 border border-[#C6F500]/20 rounded-md py-1 px-2.5 font-bold inline-block">
+              {activeRole ? `${activeRole} Portal` : 'Portal'}
+            </span>
           </div>
 
           {navItems.length > 0 && (
@@ -126,10 +130,10 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2 rounded-btn text-xs font-medium transition-colors ${
+                      `flex items-center gap-3 px-3 py-2 rounded-btn text-xs transition-colors ${
                         isActive
-                          ? 'bg-brand-blue text-white shadow-sm'
-                          : 'text-muted-slate hover:text-surface-white hover:bg-navy-surface/70'
+                          ? 'bg-[#C6F500] text-[#090B09] font-bold shadow-sm'
+                          : 'text-[#A3ADA0] hover:text-[#F5F7F2] hover:bg-[#171D17] font-medium'
                       }`
                     }
                   >
@@ -143,22 +147,22 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
         </div>
 
         {/* User Card in Sidebar */}
-        <div className="pt-4 border-t border-navy-surface space-y-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-brand-blue/20 text-brand-cyan flex items-center justify-center font-bold text-xs shrink-0">
+        <div className="pt-4 border-t border-[#303A2B] space-y-3">
+          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-[#171D17] border border-[#303A2B]">
+            <div className="w-8 h-8 rounded-full bg-[#C6F500]/15 text-[#C6F500] border border-[#C6F500]/30 flex items-center justify-center font-bold text-xs shrink-0">
               {user?.name ? user.name.charAt(0).toUpperCase() : <UserIcon className="w-4 h-4" />}
             </div>
             <div className="overflow-hidden text-left">
-              <p className="text-xs font-semibold text-surface-white truncate">{user?.name ?? 'User'}</p>
-              <p className="text-[11px] text-muted-slate truncate">{user?.email ?? ''}</p>
+              <p className="text-xs font-bold text-[#F5F7F2] truncate">{user?.name ?? 'User'}</p>
+              <p className="text-[11px] text-[#A3ADA0] truncate">{user?.email ?? ''}</p>
             </div>
           </div>
 
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={handleLogout}
-            className="w-full text-xs justify-start gap-2 border-slate-700 hover:border-red-500/50 hover:text-red-400"
+            className="w-full text-xs justify-start gap-2 hover:border-red-500/50 hover:text-red-400"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -169,19 +173,22 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
       {/* Main viewport */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* TopBar */}
-        <header className="h-16 border-b border-navy-surface bg-navy/60 px-4 md:px-6 flex items-center justify-between sticky top-0 z-20 backdrop-blur">
+        <header className="h-16 border-b border-[#303A2B] bg-[#111611]/90 px-4 md:px-6 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md">
           <div className="flex items-center gap-3">
             {navItems.length > 0 && (
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
-                className="md:hidden p-1.5 rounded-md text-muted-slate hover:text-surface-white hover:bg-navy-surface"
+                className="md:hidden p-1.5 rounded-md text-[#A3ADA0] hover:text-[#F5F7F2] hover:bg-[#171D17]"
                 aria-label="Toggle Menu"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             )}
-            <div className="text-sm font-medium text-surface-white capitalize">
+            <div className="md:hidden">
+              <BrandLogo variant="dark" size="sm" showText={false} />
+            </div>
+            <div className="text-sm font-semibold text-[#F5F7F2] capitalize">
               {activeRole ? `${activeRole} Workspace` : 'Dashboard'}
             </div>
           </div>
@@ -201,19 +208,19 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
                         ? '/admin/notifications'
                         : '/seeker/notifications'
                 }
-                className="p-2 rounded-full text-muted-slate hover:text-surface-white hover:bg-navy-surface transition-colors"
+                className="p-2 rounded-full text-[#A3ADA0] hover:text-[#C6F500] hover:bg-[#171D17] transition-colors"
                 aria-label="Notifications"
               >
                 <Bell className="w-4 h-4" />
               </Link>
             )}
             <div className="flex items-center gap-2 md:hidden">
-              <span className="text-xs text-muted-slate truncate max-w-[100px]">{user?.name}</span>
+              <span className="text-xs text-[#A3ADA0] truncate max-w-[100px]">{user?.name}</span>
               <button
                 type="button"
                 onClick={handleLogout}
                 aria-label="Sign Out"
-                className="p-1.5 text-muted-slate hover:text-red-400 transition-colors"
+                className="p-1.5 text-[#A3ADA0] hover:text-red-400 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -223,7 +230,7 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && navItems.length > 0 && (
-          <div className="md:hidden border-b border-navy-surface bg-navy px-4 py-3 space-y-1">
+          <div className="md:hidden border-b border-[#303A2B] bg-[#111611] px-4 py-3 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -232,10 +239,10 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
                   to={item.to}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 rounded-btn text-xs font-medium transition-colors ${
+                    `flex items-center gap-3 px-3 py-2 rounded-btn text-xs transition-colors ${
                       isActive
-                        ? 'bg-brand-blue text-white'
-                        : 'text-muted-slate hover:text-surface-white hover:bg-navy-surface'
+                        ? 'bg-[#C6F500] text-[#090B09] font-bold'
+                        : 'text-[#A3ADA0] hover:text-[#F5F7F2] hover:bg-[#171D17] font-medium'
                     }`
                   }
                 >
@@ -248,7 +255,7 @@ export function DashboardLayout({ role }: DashboardLayoutProps) {
         )}
 
         {/* Content area */}
-        <main className="flex-1 p-4 md:p-6 overflow-auto">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto bg-[#090B09]">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

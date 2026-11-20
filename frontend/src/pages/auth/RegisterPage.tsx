@@ -56,12 +56,12 @@ export function RegisterPage() {
   if (successInfo) {
     return (
       <div className="text-center space-y-5 py-4">
-        <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 rounded-full bg-[#C6F500]/10 text-[#C6F500] border border-[#C6F500]/30 flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-7 h-7" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-surface-white">Account Created!</h2>
-          <p className="text-xs text-muted-slate mt-2 leading-relaxed max-w-sm mx-auto">
+          <h2 className="text-xl font-bold text-[#F5F7F2]">Account Created!</h2>
+          <p className="text-xs text-[#A3ADA0] mt-2 leading-relaxed max-w-sm mx-auto">
             {successInfo.message}
           </p>
         </div>
@@ -81,8 +81,8 @@ export function RegisterPage() {
   return (
     <div className="space-y-6">
       <div className="text-left">
-        <h2 className="text-xl font-bold text-surface-white tracking-tight">Create your account</h2>
-        <p className="text-xs text-muted-slate mt-1">
+        <h2 className="text-xl font-bold text-[#F5F7F2] tracking-tight">Create your account</h2>
+        <p className="text-xs text-[#A3ADA0] mt-1">
           Join SkillOrbit AI to accelerate your career and development
         </p>
       </div>
@@ -153,13 +153,13 @@ export function RegisterPage() {
             id="acceptTerms"
             type="checkbox"
             disabled={isSubmitting}
-            className="mt-0.5 rounded border-slate-700 bg-midnight-navy text-brand-blue focus:ring-brand-blue"
+            className="mt-0.5 rounded border-[#303A2B] bg-[#111611] text-[#C6F500] focus:ring-[#C6F500]"
             {...register('acceptTerms')}
           />
-          <label htmlFor="acceptTerms" className="text-xs text-muted-slate select-none leading-relaxed">
+          <label htmlFor="acceptTerms" className="text-xs text-[#A3ADA0] select-none leading-relaxed">
             I agree to the{' '}
-            <span className="text-brand-cyan hover:underline cursor-pointer">Terms of Service</span> and{' '}
-            <span className="text-brand-cyan hover:underline cursor-pointer">Privacy Policy</span>.
+            <span className="text-[#C6F500] hover:underline cursor-pointer font-medium">Terms of Service</span> and{' '}
+            <span className="text-[#C6F500] hover:underline cursor-pointer font-medium">Privacy Policy</span>.
           </label>
         </div>
         {errors.acceptTerms && (
@@ -171,9 +171,9 @@ export function RegisterPage() {
         </Button>
       </form>
 
-      <div className="text-center text-xs text-muted-slate pt-2 border-t border-navy-surface">
+      <div className="text-center text-xs text-[#A3ADA0] pt-2 border-t border-[#303A2B]">
         Already have an account?{' '}
-        <Link to="/login" className="font-medium text-brand-cyan hover:underline">
+        <Link to="/login" className="font-semibold text-[#C6F500] hover:underline">
           Sign In
         </Link>
       </div>

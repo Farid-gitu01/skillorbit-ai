@@ -130,6 +130,7 @@ export function ServicesSection() {
   const duplicatedServices = [...SERVICES_DATA, ...SERVICES_DATA];
 
   const handleManualScroll = (direction: 'left' | 'right') => {
+    setIsPaused(true);
     if (scrollContainerRef.current) {
       const scrollAmount = direction === 'left' ? -380 : 380;
       scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
@@ -139,23 +140,23 @@ export function ServicesSection() {
   return (
     <section
       id="services"
-      className="py-16 md:py-24 relative overflow-hidden bg-midnight-navy"
+      className="py-16 md:py-24 relative overflow-hidden bg-[#080808] border-t border-neutral-800/80"
       aria-label="SkillOrbit AI Services"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/15 border border-brand-blue/30 text-xs font-semibold text-brand-cyan">
+          <div className="space-y-3 max-w-2xl text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-xs font-semibold text-yellow-400">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Implemented Platform Capabilities</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-surface-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
               Intelligent Services Engineered for{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-brand-cyan to-brand-purple">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500">
                 Career Acceleration
               </span>
             </h2>
-            <p className="text-sm sm:text-base text-slate-300">
+            <p className="text-sm sm:text-base text-neutral-300">
               Explore our native suite of nine production-ready career tools. Every service is
               actively integrated and accessible from your personalized dashboard.
             </p>
@@ -166,22 +167,22 @@ export function ServicesSection() {
             <button
               onClick={() => setIsPaused((prev) => !prev)}
               aria-label={isPaused ? 'Resume automatic sliding' : 'Pause automatic sliding'}
-              className="p-2.5 rounded-lg bg-navy/80 hover:bg-navy-surface border border-navy-surface text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-medium"
+              className="p-2.5 rounded-lg bg-[#141414] hover:bg-[#1A1A1A] border border-neutral-800 text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-sm"
             >
-              {isPaused ? <Play className="w-4 h-4 text-emerald-400" /> : <Pause className="w-4 h-4 text-brand-cyan" />}
+              {isPaused ? <Play className="w-4 h-4 text-yellow-400" /> : <Pause className="w-4 h-4 text-yellow-400" />}
               <span className="hidden sm:inline">{isPaused ? 'Resume' : 'Pause'}</span>
             </button>
             <button
               onClick={() => handleManualScroll('left')}
               aria-label="Scroll services left"
-              className="p-2.5 rounded-lg bg-navy/80 hover:bg-navy-surface border border-navy-surface text-slate-300 hover:text-white transition-colors"
+              className="p-2.5 rounded-lg bg-[#141414] hover:bg-[#1A1A1A] border border-neutral-800 text-neutral-300 hover:text-yellow-400 transition-colors shadow-sm"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleManualScroll('right')}
               aria-label="Scroll services right"
-              className="p-2.5 rounded-lg bg-navy/80 hover:bg-navy-surface border border-navy-surface text-slate-300 hover:text-white transition-colors"
+              className="p-2.5 rounded-lg bg-[#141414] hover:bg-[#1A1A1A] border border-neutral-800 text-neutral-300 hover:text-yellow-400 transition-colors shadow-sm"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -198,11 +199,11 @@ export function ServicesSection() {
       >
         {/* Horizontal Gradient Vignettes for smooth edge fades */}
         <div
-          className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-midnight-navy to-transparent z-10"
+          className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-[#080808] to-transparent z-10"
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-midnight-navy to-transparent z-10"
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-[#080808] to-transparent z-10"
           aria-hidden="true"
         />
 
@@ -219,40 +220,40 @@ export function ServicesSection() {
             return (
               <div
                 key={`${service.id}-${index}`}
-                className="w-[280px] sm:w-[340px] shrink-0 rounded-2xl bg-gradient-to-b from-navy/90 to-midnight-navy/95 border border-navy-surface/80 hover:border-brand-cyan/60 p-6 flex flex-col justify-between transition-all duration-300 shadow-card hover:shadow-xl hover:-translate-y-1 group/card"
+                className="w-[280px] sm:w-[340px] shrink-0 rounded-2xl bg-[#111111] border border-neutral-800 hover:border-yellow-400/60 p-6 flex flex-col justify-between transition-all duration-300 shadow-lg hover:shadow-yellow-400/5 hover:-translate-y-1 group/card"
               >
                 <div className="space-y-4">
                   {/* Top Bar with Icon and Feature Tag */}
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-xl bg-brand-blue/15 border border-brand-blue/30 text-brand-cyan flex items-center justify-center group-hover/card:bg-brand-cyan/20 group-hover/card:scale-105 transition-all">
+                    <div className="w-12 h-12 rounded-xl bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 flex items-center justify-center group-hover/card:bg-yellow-400 group-hover/card:text-black transition-all shadow-sm">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="text-[11px] font-semibold text-brand-cyan/90 bg-brand-cyan/10 border border-brand-cyan/20 px-2.5 py-1 rounded-full">
+                    <span className="text-[11px] font-bold text-yellow-400 bg-yellow-400/10 border border-yellow-400/25 px-2.5 py-1 rounded-full">
                       {service.tag}
                     </span>
                   </div>
 
                   {/* Title and Tagline */}
                   <div>
-                    <h3 className="text-lg font-bold text-surface-white group-hover/card:text-brand-cyan transition-colors">
+                    <h3 className="text-lg font-bold text-white group-hover/card:text-yellow-400 transition-colors">
                       {service.title}
                     </h3>
-                    <p className="text-xs text-muted-slate font-medium pt-0.5">
+                    <p className="text-xs text-yellow-400/90 font-medium pt-0.5">
                       {service.tagline}
                     </p>
                   </div>
 
                   {/* Service Description */}
-                  <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                  <p className="text-xs text-neutral-300 leading-relaxed font-normal">
                     {service.description}
                   </p>
                 </div>
 
                 {/* Card Action Link */}
-                <div className="pt-6 border-t border-navy-surface/60 mt-4">
+                <div className="pt-6 border-t border-neutral-800/80 mt-4">
                   <Link
                     to={targetLink}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-cyan group-hover/card:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-yellow-400 group-hover/card:text-yellow-300 transition-colors"
                   >
                     <span>{isAuthenticated ? 'Launch Tool' : 'Get Access'}</span>
                     <ArrowUpRight className="w-3.5 h-3.5 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5 transition-transform" />

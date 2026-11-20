@@ -3,20 +3,41 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-midnight-navy: #080D1B;
-  --color-navy: #111C35;
-  --color-navy-surface: #1E293B;
-  --color-brand-blue: #2563EB;
-  --color-brand-cyan: #06B6D4;
-  --color-brand-violet: #7C3AED;
-  --color-brand-purple: #A855F7;
-  --color-surface-white: #F8FAFC;
-  --color-muted-slate: #94A3B8;
+  /* Internal Theme: Black + Yellow-Green (Lime) */
+  --color-app-bg: #090B09;
+  --color-app-surface: #111611;
+  --color-app-card: #171D17;
+  --color-app-elevated: #202820;
+  --color-app-border: #303A2B;
+  --color-app-lime: #C6F500;
+  --color-app-lime-dark: #A8D900;
+  --color-app-text: #F5F7F2;
+  --color-app-muted: #A3ADA0;
+
+  /* Landing Page Theme: White + Blue */
+  --color-lp-bg: #FFFFFF;
+  --color-lp-surface: #F5F8FF;
+  --color-lp-blue: #2563EB;
+  --color-lp-blue-dark: #1E3A8A;
+  --color-lp-heading: #111827;
+  --color-lp-body: #475569;
+  --color-lp-border: #E2E8F0;
+
+  /* Aliases mapped to the internal dark palette so existing dashboard pages seamlessly match */
+  --color-midnight-navy: #090B09;
+  --color-navy: #111611;
+  --color-navy-surface: #171D17;
+  --color-brand-blue: #C6F500;
+  --color-brand-cyan: #C6F500;
+  --color-brand-violet: #A8D900;
+  --color-brand-purple: #A8D900;
+  --color-surface-white: #F5F7F2;
+  --color-muted-slate: #A3ADA0;
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
-  --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.7);
 
   --radius-btn: 8px;
   --radius-card: 12px;

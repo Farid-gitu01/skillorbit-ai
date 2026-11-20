@@ -57,8 +57,8 @@ export function LoginPage() {
   return (
     <div className="space-y-6">
       <div className="text-left">
-        <h2 className="text-xl font-bold text-surface-white tracking-tight">Welcome back</h2>
-        <p className="text-xs text-muted-slate mt-1">
+        <h2 className="text-xl font-bold text-[#F5F7F2] tracking-tight">Welcome back</h2>
+        <p className="text-xs text-[#A3ADA0] mt-1">
           Sign in to access your SkillOrbit AI dashboard
         </p>
       </div>
@@ -94,7 +94,7 @@ export function LoginPage() {
           <div className="text-right">
             <Link
               to="/forgot-password"
-              className="text-xs text-brand-cyan hover:underline select-none"
+              className="text-xs font-semibold text-[#C6F500] hover:underline select-none"
             >
               Forgot password?
             </Link>
@@ -106,9 +106,9 @@ export function LoginPage() {
         </Button>
       </form>
 
-      <div className="text-center text-xs text-muted-slate pt-2 border-t border-navy-surface">
+      <div className="text-center text-xs text-[#A3ADA0] pt-2 border-t border-[#303A2B]">
         Don&apos;t have an account?{' '}
-        <Link to="/register" className="font-medium text-brand-cyan hover:underline">
+        <Link to="/register" className="font-semibold text-[#C6F500] hover:underline">
           Create Account
         </Link>
       </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { seekerService, jobService } from '@/services';
 import type { SeekerDashboardData } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
+import { BrandLogo } from '@/components/common';
 import {
   Alert,
   Badge,
@@ -133,18 +134,21 @@ export function SeekerDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner & Quick Actions */}
-      <div className="rounded-card bg-gradient-to-r from-navy via-navy to-brand-blue/20 border border-navy-surface p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-brand-cyan text-xs font-medium">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Career Command Center</span>
+      <div className="rounded-2xl bg-gradient-to-r from-[#111611] via-[#171D17] to-[#C6F500]/10 border border-[#303A2B] p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-start gap-4">
+          <BrandLogo variant="dark" size="md" showText={false} className="shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-[#C6F500] text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Career Command Center</span>
+            </div>
+            <h1 className="text-2xl font-bold text-[#F5F7F2]">
+              Welcome back, {displayName}
+            </h1>
+            <p className="text-xs text-[#A3ADA0] max-w-xl">
+              {data.profile.headline || 'Complete your career profile and let SkillOrbit AI connect you to verified opportunities.'}
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-surface-white">
-            Welcome back, {displayName}
-          </h1>
-          <p className="text-xs text-muted-slate max-w-xl">
-            {data.profile.headline || 'Complete your career profile and let SkillOrbit AI connect you to verified opportunities.'}
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0">

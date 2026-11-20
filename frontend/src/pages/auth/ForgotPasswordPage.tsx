@@ -40,27 +40,27 @@ export function ForgotPasswordPage() {
   if (successInfo) {
     return (
       <div className="text-center space-y-5 py-4">
-        <div className="w-12 h-12 rounded-full bg-blue-500/20 text-brand-cyan flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 rounded-full bg-[#C6F500]/10 text-[#C6F500] border border-[#C6F500]/30 flex items-center justify-center mx-auto">
           <MailCheck className="w-7 h-7" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-surface-white">Check your email</h2>
-          <p className="text-xs text-muted-slate mt-2 leading-relaxed max-w-sm mx-auto">
+          <h2 className="text-xl font-bold text-[#F5F7F2]">Check your email</h2>
+          <p className="text-xs text-[#A3ADA0] mt-2 leading-relaxed max-w-sm mx-auto">
             {successInfo.message}
           </p>
         </div>
 
         {/* Development mode delivery aid if returned by backend */}
         {successInfo.resetToken && (
-          <div className="p-3 bg-navy-surface border border-slate-700 rounded-btn text-left space-y-1 text-xs">
-            <span className="text-amber-400 font-semibold block">Dev Test Helper:</span>
-            <span className="text-muted-slate break-all font-mono text-[11px]">
+          <div className="p-3 bg-[#111611] border border-[#303A2B] rounded-btn text-left space-y-1 text-xs">
+            <span className="text-[#C6F500] font-semibold block">Dev Test Helper:</span>
+            <span className="text-[#A3ADA0] break-all font-mono text-[11px]">
               {successInfo.resetToken}
             </span>
             <div className="pt-1">
               <Link
                 to={`/reset-password?token=${encodeURIComponent(successInfo.resetToken)}`}
-                className="text-brand-cyan hover:underline font-medium inline-block"
+                className="text-[#C6F500] hover:underline font-semibold inline-block"
               >
                 Proceed to Reset Form &rarr;
               </Link>
@@ -71,7 +71,7 @@ export function ForgotPasswordPage() {
         <div className="pt-2">
           <Link
             to="/login"
-            className="inline-flex items-center gap-1.5 text-xs text-brand-cyan hover:underline font-medium"
+            className="inline-flex items-center gap-1.5 text-xs text-[#C6F500] hover:underline font-semibold"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
           </Link>
@@ -83,8 +83,8 @@ export function ForgotPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="text-left">
-        <h2 className="text-xl font-bold text-surface-white tracking-tight">Reset password</h2>
-        <p className="text-xs text-muted-slate mt-1">
+        <h2 className="text-xl font-bold text-[#F5F7F2] tracking-tight">Reset password</h2>
+        <p className="text-xs text-[#A3ADA0] mt-1">
           Enter your account email to receive a password recovery link
         </p>
       </div>
@@ -111,10 +111,10 @@ export function ForgotPasswordPage() {
         </Button>
       </form>
 
-      <div className="text-center pt-2 border-t border-navy-surface">
+      <div className="text-center pt-2 border-t border-[#303A2B]">
         <Link
           to="/login"
-          className="inline-flex items-center gap-1.5 text-xs text-muted-slate hover:text-surface-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-[#A3ADA0] hover:text-[#F5F7F2] transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
         </Link>

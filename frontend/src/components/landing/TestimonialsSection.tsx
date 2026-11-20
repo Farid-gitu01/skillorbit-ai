@@ -94,6 +94,7 @@ export function TestimonialsSection() {
   const duplicatedProfiles = [...FIVE_PROFILES, ...FIVE_PROFILES];
 
   const handleManualScroll = (direction: 'left' | 'right') => {
+    setIsPaused(true);
     if (scrollContainerRef.current) {
       const scrollAmount = direction === 'left' ? -380 : 380;
       scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
@@ -103,30 +104,30 @@ export function TestimonialsSection() {
   return (
     <section
       id="testimonials"
-      className="py-16 md:py-24 relative overflow-hidden bg-navy/30 border-t border-navy-surface/50"
+      className="py-16 md:py-24 relative overflow-hidden bg-[#0B0B0B] border-t border-neutral-800/80"
       aria-label="Platform Testimonials"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-purple/15 border border-brand-purple/30 text-xs font-semibold text-brand-purple">
+          <div className="space-y-3 max-w-2xl text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-xs font-semibold text-yellow-400">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Leadership & Professional Perspectives</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-surface-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
               Trusted by Decision Makers Across{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-brand-cyan to-brand-blue">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500">
                 Every Stage of Growth
               </span>
             </h2>
-            <p className="text-sm sm:text-base text-slate-300">
+            <p className="text-sm sm:text-base text-neutral-300">
               Discover how leaders and professionals across executive, technical, operational, and
               marketing domains utilize SkillOrbit AI to align skills with strategic velocity.
             </p>
             {/* Content accuracy demo notice badge */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-navy-surface/80 border border-slate-700 text-[11px] text-muted-slate">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
-              <span>Showcase Showcase • Demonstration Profiles & Peer Reviews</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#131313] border border-neutral-800 text-[11px] text-neutral-400 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+              <span>Platform Showcase • Demonstration Profiles & Peer Reviews</span>
             </div>
           </div>
 
@@ -135,22 +136,22 @@ export function TestimonialsSection() {
             <button
               onClick={() => setIsPaused((prev) => !prev)}
               aria-label={isPaused ? 'Resume testimonial sliding' : 'Pause testimonial sliding'}
-              className="p-2.5 rounded-lg bg-navy/80 hover:bg-navy-surface border border-navy-surface text-slate-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-medium"
+              className="p-2.5 rounded-lg bg-[#141414] hover:bg-[#1A1A1A] border border-neutral-800 text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-semibold shadow-sm"
             >
-              {isPaused ? <Play className="w-4 h-4 text-emerald-400" /> : <Pause className="w-4 h-4 text-brand-cyan" />}
+              {isPaused ? <Play className="w-4 h-4 text-yellow-400" /> : <Pause className="w-4 h-4 text-yellow-400" />}
               <span className="hidden sm:inline">{isPaused ? 'Resume' : 'Pause'}</span>
             </button>
             <button
               onClick={() => handleManualScroll('left')}
               aria-label="Scroll testimonials left"
-              className="p-2.5 rounded-lg bg-navy/80 hover:bg-navy-surface border border-navy-surface text-slate-300 hover:text-white transition-colors"
+              className="p-2.5 rounded-lg bg-[#141414] hover:bg-[#1A1A1A] border border-neutral-800 text-neutral-300 hover:text-yellow-400 transition-colors shadow-sm"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleManualScroll('right')}
               aria-label="Scroll testimonials right"
-              className="p-2.5 rounded-lg bg-navy/80 hover:bg-navy-surface border border-navy-surface text-slate-300 hover:text-white transition-colors"
+              className="p-2.5 rounded-lg bg-[#141414] hover:bg-[#1A1A1A] border border-neutral-800 text-neutral-300 hover:text-yellow-400 transition-colors shadow-sm"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -167,11 +168,11 @@ export function TestimonialsSection() {
       >
         {/* Edge Vignette Overlays */}
         <div
-          className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-midnight-navy to-transparent z-10"
+          className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-[#0B0B0B] to-transparent z-10"
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-midnight-navy to-transparent z-10"
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-[#0B0B0B] to-transparent z-10"
           aria-hidden="true"
         />
 
@@ -184,48 +185,48 @@ export function TestimonialsSection() {
           {duplicatedProfiles.map((profile, index) => (
             <div
               key={`${profile.id}-${index}`}
-              className="w-[300px] sm:w-[380px] shrink-0 rounded-2xl bg-gradient-to-b from-navy/95 to-midnight-navy/95 border border-navy-surface/80 hover:border-brand-purple/60 p-6 md:p-7 flex flex-col justify-between transition-all duration-300 shadow-card hover:shadow-2xl hover:-translate-y-1 group/card"
+              className="w-[300px] sm:w-[380px] shrink-0 rounded-2xl bg-[#111111] border border-neutral-800 hover:border-yellow-400/50 p-6 md:p-7 flex flex-col justify-between transition-all duration-300 shadow-lg hover:shadow-yellow-400/5 hover:-translate-y-1 group/card"
             >
               <div className="space-y-4">
                 {/* Header: Role Category Badge & Star Rating */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/25 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-yellow-400 bg-yellow-400/10 border border-yellow-400/25 px-2.5 py-1 rounded-full flex items-center gap-1.5">
                     <Briefcase className="w-3 h-3" />
                     {profile.roleCategory}
                   </span>
-                  <div className="flex items-center gap-1 text-amber-400">
+                  <div className="flex items-center gap-1 text-yellow-400">
                     {Array.from({ length: profile.rating }).map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
                 </div>
 
                 {/* Quote Icon & Testimonial Text */}
                 <div className="relative pt-2">
-                  <Quote className="w-8 h-8 text-slate-700/60 absolute -top-1 -left-2 pointer-events-none" />
-                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed relative z-10 pl-2 italic">
+                  <Quote className="w-8 h-8 text-neutral-800 absolute -top-1 -left-2 pointer-events-none" />
+                  <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed relative z-10 pl-2 italic">
                     "{profile.testimonial}"
                   </p>
                 </div>
               </div>
 
               {/* Author Metadata Footer */}
-              <div className="pt-6 border-t border-navy-surface/60 mt-6 flex items-center gap-3.5">
+              <div className="pt-6 border-t border-neutral-800/80 mt-6 flex items-center gap-3.5">
                 {/* Professional Avatar */}
                 <div
-                  className={`w-11 h-11 rounded-full bg-gradient-to-tr ${profile.avatarColor} text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-md ring-2 ring-navy-surface`}
+                  className={`w-11 h-11 rounded-full bg-gradient-to-tr ${profile.avatarColor} text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-md ring-2 ring-neutral-800`}
                   aria-hidden="true"
                 >
                   {profile.initials}
                 </div>
                 <div className="overflow-hidden">
-                  <h4 className="text-sm font-bold text-surface-white truncate">
+                  <h4 className="text-sm font-bold text-white truncate">
                     {profile.name}
                   </h4>
-                  <p className="text-xs text-brand-purple font-medium truncate">
+                  <p className="text-xs text-yellow-400 font-medium truncate">
                     {profile.designation}
                   </p>
-                  <p className="text-[11px] text-muted-slate flex items-center gap-1 truncate">
+                  <p className="text-[11px] text-neutral-400 flex items-center gap-1 truncate">
                     <Building className="w-3 h-3 shrink-0" />
                     {profile.company}
                   </p>

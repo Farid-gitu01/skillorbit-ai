@@ -9,6 +9,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   showPasswordToggle?: boolean;
   prefixIcon?: ReactNode;
   suffixIcon?: ReactNode;
+  variant?: 'dark' | 'light' | 'yellow';
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -22,6 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       showPasswordToggle = false,
       prefixIcon,
       suffixIcon,
+      variant = 'dark',
       id,
       disabled,
       ...props
@@ -36,19 +38,28 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const resolvedType = showPasswordToggle ? (isPasswordVisible ? 'text' : 'password') : type;
 
+    const isLight = variant === 'light';
+    const isYellow = variant === 'yellow';
+
     return (
       <div className="w-full space-y-1.5 text-left">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-semibold tracking-wide text-slate-300 uppercase"
+            className={cn(
+              'block text-xs font-semibold tracking-wide uppercase',
+              isLight ? 'text-slate-700' : isYellow ? 'text-neutral-300' : 'text-[#A3ADA0]'
+            )}
           >
             {label}
           </label>
         )}
         <div className="relative flex items-center">
           {prefixIcon && (
-            <div className="absolute left-3 text-muted-slate pointer-events-none flex items-center">
+            <div className={cn(
+              'absolute left-3 pointer-events-none flex items-center',
+              isLight ? 'text-slate-400' : isYellow ? 'text-neutral-500' : 'text-[#A3ADA0]'
+            )}>
               {prefixIcon}
             </div>
           )}
@@ -60,10 +71,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : helperText ? helperId : undefined}
             className={cn(
-              'w-full rounded-btn bg-midnight-navy/90 text-surface-white text-sm border px-3.5 py-2.5 transition-colors',
-              'placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue',
+              'w-full rounded-btn text-sm border px-3.5 py-2.5 transition-colors',
               'disabled:opacity-50 disabled:cursor-not-allowed',
-              error ? 'border-red-500/80 focus:ring-red-500' : 'border-slate-700/80 hover:border-slate-600',
+              isLight
+                ? cn(
+                    'bg-white text-slate-900 placeholder:text-slate-400 border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600',
+                    error && 'border-red-500 focus:ring-red-500'
+                  )
+                : isYellow
+                  ? cn(
+                      'bg-[#0D0D0D] text-white placeholder:text-neutral-500 border-neutral-800 hover:border-yellow-400/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400',
+                      error && 'border-red-500 focus:ring-red-500'
+                    )
+                  : cn(
+                      'bg-[#111611] text-[#F5F7F2] placeholder:text-[#A3ADA0]/50 border-[#303A2B] hover:border-[#A3ADA0]/40 focus:outline-none focus:ring-2 focus:ring-[#C6F500] focus:border-[#C6F500]',
+                      error && 'border-red-500/80 focus:ring-red-500'
+                    ),
               prefixIcon ? 'pl-10' : 'pl-3.5',
               showPasswordToggle || suffixIcon ? 'pr-10' : 'pr-3.5',
               className

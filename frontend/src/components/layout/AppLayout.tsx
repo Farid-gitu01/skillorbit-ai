@@ -8,7 +8,7 @@ import { Navbar, Footer } from '@/components/landing';
  */
 export function AppLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-midnight-navy text-surface-white selection:bg-brand-blue/30 selection:text-brand-cyan">
+    <div className="min-h-screen flex flex-col bg-[#080808] text-neutral-100 selection:bg-yellow-400/30 selection:text-yellow-300">
       {/* Section A: Navigation Bar */}
       <Navbar />
 

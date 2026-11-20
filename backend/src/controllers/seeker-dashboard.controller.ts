@@ -8,6 +8,7 @@ import { Resume } from '../models/Resume.model.js';
 import { User } from '../models/user.model.js';
 import { calculateProfileCompletion } from './profile.controller.js';
 import { sendError, sendSuccess } from '../utils/api-response.util.js';
+import { escapeRegex } from '../utils/employer.util.js';
 
 export const getSeekerDashboard = async (req: Request, res: Response): Promise<void> => {
   const userId = req.userId;
@@ -75,8 +76,13 @@ export const getSeekerDashboard = async (req: Request, res: Response): Promise<v
     isDeleted: false,
   };
   if (skillsList.length > 0) {
-    const regexList = skillsList.map((s) => new RegExp(s.trim(), 'i'));
-    recFilter.$or = [{ title: { $in: regexList } }, { description: { $in: regexList } }];
+    const regexList = skillsList
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+      .map((s) => new RegExp(escapeRegex(s), 'i'));
+    if (regexList.length > 0) {
+      recFilter.$or = [{ title: { $in: regexList } }, { description: { $in: regexList } }];
+    }
   }
 
   let recommendedJobs = await Job.find(recFilter)

@@ -97,84 +97,84 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="py-16 md:py-24 relative overflow-hidden bg-midnight-navy border-t border-navy-surface/40"
+      className="py-16 md:py-24 relative overflow-hidden bg-[#080808] border-t border-neutral-800/80"
       aria-label="Contact SkillOrbit AI"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Contact Information & Context */}
           <div className="lg:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-xs font-semibold text-brand-cyan">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-xs font-semibold text-yellow-400">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Get in Touch</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-surface-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               Connect with Our{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-blue">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500">
                 Platform Advisory
               </span>
             </h2>
 
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+            <p className="text-sm sm:text-base text-neutral-300 leading-relaxed font-normal">
               Have questions regarding our AI resume diagnostics, enterprise talent solutions, or
               training provider partnerships? Reach out directly to our platform team.
             </p>
 
             {/* Direct Contact Cards */}
             <div className="space-y-3.5 pt-2">
-              <div className="flex items-start gap-3.5 p-4 rounded-xl bg-navy/60 border border-navy-surface">
-                <div className="w-10 h-10 rounded-lg bg-brand-blue/15 border border-brand-blue/30 text-brand-cyan flex items-center justify-center shrink-0">
+              <div className="flex items-start gap-3.5 p-4 rounded-xl bg-[#111111] border border-neutral-800 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-yellow-400/15 text-yellow-400 flex items-center justify-center shrink-0">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-slate">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
                     Support & Advisory
                   </h3>
                   <a
                     href="mailto:support@skillorbit.ai"
-                    className="text-sm font-bold text-surface-white hover:text-brand-cyan transition-colors"
+                    className="text-sm font-bold text-white hover:text-yellow-400 transition-colors"
                   >
                     support@skillorbit.ai
                   </a>
-                  <p className="text-xs text-slate-400 pt-0.5">
+                  <p className="text-xs text-neutral-400 pt-0.5">
                     Technical inquiries & candidate support
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3.5 p-4 rounded-xl bg-navy/60 border border-navy-surface">
-                <div className="w-10 h-10 rounded-lg bg-brand-purple/15 border border-brand-purple/30 text-brand-purple flex items-center justify-center shrink-0">
+              <div className="flex items-start gap-3.5 p-4 rounded-xl bg-[#111111] border border-neutral-800 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-yellow-400/15 text-yellow-400 flex items-center justify-center shrink-0">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-slate">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
                     Enterprise & Providers
                   </h3>
                   <a
                     href="mailto:partnerships@skillorbit.ai"
-                    className="text-sm font-bold text-surface-white hover:text-brand-purple transition-colors"
+                    className="text-sm font-bold text-white hover:text-yellow-400 transition-colors"
                   >
                     partnerships@skillorbit.ai
                   </a>
-                  <p className="text-xs text-slate-400 pt-0.5">
+                  <p className="text-xs text-neutral-400 pt-0.5">
                     Hiring integrations & course publishing
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3.5 p-4 rounded-xl bg-navy/60 border border-navy-surface">
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+              <div className="flex items-start gap-3.5 p-4 rounded-xl bg-[#111111] border border-neutral-800 shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-yellow-400/15 text-yellow-400 flex items-center justify-center shrink-0">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-slate">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
                     SLA & Availability
                   </h3>
-                  <p className="text-sm font-bold text-surface-white">
+                  <p className="text-sm font-bold text-white">
                     24 – 48 Business Hours
                   </p>
-                  <p className="text-xs text-slate-400 pt-0.5">
+                  <p className="text-xs text-neutral-400 pt-0.5">
                     Mon – Fri, 9:00 AM – 6:00 PM EST
                   </p>
                 </div>
@@ -184,29 +184,29 @@ export function ContactSection() {
 
           {/* Right Column: Contact Form */}
           <div className="lg:col-span-7 w-full">
-            <div className="rounded-2xl bg-navy/60 border border-navy-surface/90 p-6 sm:p-8 shadow-card backdrop-blur-md">
+            <div className="rounded-2xl bg-[#111111] border border-neutral-800 p-6 sm:p-8 shadow-xl">
               {submissionStatus === 'validated' ? (
                 /* Validated Feedback Banner */
                 <div className="space-y-5 text-left py-4 animate-in fade-in duration-300">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-yellow-400/15 text-yellow-400 flex items-center justify-center">
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="text-lg font-bold text-surface-white">
+                    <h3 className="text-lg font-bold text-white">
                       Form Validation Successful
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
                       Your inquiry has been checked and validated.
                     </p>
                   </div>
 
                   {/* Explicit status disclosure per prompt instruction */}
-                  <div className="p-4 rounded-xl bg-midnight-navy/90 border border-slate-700/80 space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-brand-cyan">
+                  <div className="p-4 rounded-xl bg-[#161616] border border-neutral-800 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-yellow-400">
                       <AlertCircle className="w-4 h-4 shrink-0" />
                       <span>Integration Status Notice</span>
                     </div>
-                    <p className="text-xs text-muted-slate leading-relaxed">
+                    <p className="text-xs text-neutral-400 leading-relaxed">
                       This contact form is verified and integration-ready. Because no public contact
                       backend API endpoint is currently configured on this environment, your
                       inquiry is staged locally. You can immediately transmit this message via your
@@ -216,13 +216,13 @@ export function ContactSection() {
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                     <a href={mailtoUrl} className="inline-block">
-                      <Button variant="primary" size="md" className="gap-2">
+                      <Button variant="yellow" size="md" className="gap-2">
                         <Mail className="w-4 h-4" />
                         <span>Send via Email Client</span>
                         <ExternalLink className="w-3.5 h-3.5" />
                       </Button>
                     </a>
-                    <Button variant="outline" size="md" onClick={handleReset} className="gap-2">
+                    <Button variant="yellow-outline" size="md" onClick={handleReset} className="gap-2">
                       <RotateCcw className="w-4 h-4" />
                       <span>Reset Form</span>
                     </Button>
@@ -233,6 +233,7 @@ export function ContactSection() {
                 <form onSubmit={handleSubmit} noValidate className="space-y-4 text-left">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input
+                      variant="yellow"
                       label="Full Name"
                       placeholder="e.g. Alex Morgan"
                       value={form.name}
@@ -242,6 +243,7 @@ export function ContactSection() {
                     />
 
                     <Input
+                      variant="yellow"
                       label="Email Address"
                       type="email"
                       placeholder="e.g. alex@company.com"
@@ -253,6 +255,7 @@ export function ContactSection() {
                   </div>
 
                   <Input
+                    variant="yellow"
                     label="Subject"
                     placeholder="e.g. Platform Demonstration / Partnership"
                     value={form.subject}
@@ -265,7 +268,7 @@ export function ContactSection() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor={messageId}
-                      className="block text-xs font-semibold tracking-wide text-slate-300 uppercase"
+                      className="block text-xs font-semibold tracking-wide text-neutral-300 uppercase"
                     >
                       Message
                     </label>
@@ -277,10 +280,10 @@ export function ContactSection() {
                       aria-invalid={Boolean(errors.message)}
                       aria-describedby={errors.message ? messageErrorId : undefined}
                       onChange={(e) => setForm((prev) => ({ ...prev, message: e.target.value }))}
-                      className={`w-full rounded-btn bg-midnight-navy/90 text-surface-white text-sm border px-3.5 py-2.5 transition-colors placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue resize-y ${
+                      className={`w-full rounded-btn bg-[#0D0D0D] text-white text-sm border px-3.5 py-2.5 transition-colors placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 resize-y ${
                         errors.message
-                          ? 'border-red-500/80 focus:ring-red-500'
-                          : 'border-slate-700/80 hover:border-slate-600'
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-neutral-800 hover:border-neutral-700'
                       }`}
                       required
                     />
@@ -294,10 +297,10 @@ export function ContactSection() {
                   <div className="pt-2">
                     <Button
                       type="submit"
-                      variant="primary"
+                      variant="yellow"
                       size="lg"
                       isLoading={isSubmitting}
-                      className="w-full gap-2 shadow-md shadow-brand-blue/20"
+                      className="w-full gap-2 shadow-md shadow-yellow-400/10"
                     >
                       <Send className="w-4 h-4" />
                       <span>Send Inquiry</span>

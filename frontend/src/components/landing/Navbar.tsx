@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui';
-import { Menu, X, Sparkles, ArrowRight, UserCheck } from 'lucide-react';
+import { BrandLogo } from '@/components/common';
+import { Menu, X, ArrowRight, UserCheck } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -119,8 +120,8 @@ export function Navbar() {
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         isScrolled
-          ? 'bg-midnight-navy/95 backdrop-blur-md border-b border-navy-surface shadow-card'
-          : 'bg-midnight-navy/80 backdrop-blur-sm border-b border-navy-surface/40'
+          ? 'bg-[#0B0B0B]/95 backdrop-blur-md border-b border-neutral-800/80 shadow-lg shadow-black/50'
+          : 'bg-[#080808]/80 backdrop-blur-sm border-b border-neutral-900/60'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -128,21 +129,10 @@ export function Navbar() {
           {/* Logo & Branding */}
           <button
             onClick={() => scrollToSection('home')}
-            className="flex items-center gap-2.5 group text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded-md p-1"
+            className="flex items-center group text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 rounded-lg p-1"
             aria-label="SkillOrbit AI Home"
           >
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-brand-blue via-brand-purple to-brand-cyan flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-lg md:text-xl tracking-tight text-surface-white">
-                Skill<span className="text-brand-cyan">Orbit</span>{' '}
-                <span className="text-brand-blue font-bold">AI</span>
-              </span>
-              <span className="text-[10px] uppercase tracking-wider text-muted-slate font-semibold hidden sm:inline-block">
-                Career Intelligence Platform
-              </span>
-            </div>
+            <BrandLogo variant="yellow" size="md" subtitle="Career Intelligence" />
           </button>
 
           {/* Desktop Navigation Links */}
@@ -153,15 +143,15 @@ export function Navbar() {
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`px-3.5 py-2 text-sm font-medium rounded-md transition-all duration-200 relative ${
+                  className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 relative ${
                     isActive
-                      ? 'text-brand-cyan font-semibold bg-brand-cyan/10'
-                      : 'text-slate-300 hover:text-surface-white hover:bg-navy-surface/50'
+                      ? 'text-yellow-400 font-semibold bg-yellow-400/10'
+                      : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
                   }`}
                 >
                   {item.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-brand-cyan rounded-full" />
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-yellow-400 rounded-full" />
                   )}
                 </button>
               );
@@ -173,24 +163,24 @@ export function Navbar() {
             {isAuthenticated && user ? (
               <div className="flex items-center gap-3">
                 <Link to={`/${user.role}/dashboard`}>
-                  <Button variant="outline" size="sm" className="gap-2 border-brand-blue/40 text-brand-cyan hover:border-brand-blue">
+                  <Button variant="yellow-outline" size="sm" className="gap-2">
                     <UserCheck className="w-4 h-4" />
                     <span>Dashboard</span>
                   </Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-neutral-300 hover:text-white">
                   Sign Out
                 </Button>
               </div>
             ) : (
               <div className="flex items-center gap-2.5">
                 <Link to="/login">
-                  <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white">
+                  <Button variant="ghost" size="sm" className="text-neutral-300 hover:text-yellow-400 font-medium">
                     Sign In
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="primary" size="sm" className="gap-1.5 shadow-sm">
+                  <Button variant="yellow" size="sm" className="gap-1.5 shadow-md shadow-yellow-500/20">
                     <span>Get Started</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
@@ -206,7 +196,7 @@ export function Navbar() {
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
               aria-label={isMobileMenuOpen ? 'Close main menu' : 'Open main menu'}
               aria-expanded={isMobileMenuOpen}
-              className="p-2 rounded-md text-slate-300 hover:text-white hover:bg-navy-surface focus:outline-none focus:ring-2 focus:ring-brand-blue"
+              className="p-2 rounded-lg text-neutral-300 hover:text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -216,7 +206,7 @@ export function Navbar() {
 
       {/* Mobile Drawer Navigation */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-navy-surface bg-midnight-navy/98 backdrop-blur-xl animate-in slide-in-from-top-2 duration-200">
+        <div className="md:hidden border-b border-neutral-800 bg-[#0C0C0C]/98 backdrop-blur-xl shadow-2xl animate-in slide-in-from-top-2 duration-200">
           <div className="px-4 pt-3 pb-6 space-y-2">
             <nav className="flex flex-col space-y-1" aria-label="Mobile Navigation">
               {NAV_ITEMS.map((item) => {
@@ -227,8 +217,8 @@ export function Navbar() {
                     onClick={() => scrollToSection(item.id)}
                     className={`w-full text-left px-3.5 py-2.5 rounded-lg text-base font-medium transition-colors ${
                       isActive
-                        ? 'bg-brand-blue/15 text-brand-cyan font-semibold border-l-4 border-brand-cyan'
-                        : 'text-slate-300 hover:text-white hover:bg-navy-surface/60'
+                        ? 'bg-yellow-400/15 text-yellow-400 font-semibold border-l-4 border-yellow-400'
+                        : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
                     }`}
                   >
                     {item.label}
@@ -237,7 +227,7 @@ export function Navbar() {
               })}
             </nav>
 
-            <div className="pt-4 border-t border-navy-surface/80 flex flex-col gap-2.5">
+            <div className="pt-4 border-t border-neutral-800 flex flex-col gap-2.5">
               {isAuthenticated && user ? (
                 <>
                   <Link
@@ -245,13 +235,13 @@ export function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="w-full"
                   >
-                    <Button variant="primary" size="md" className="w-full gap-2">
+                    <Button variant="yellow" size="md" className="w-full gap-2">
                       <UserCheck className="w-4 h-4" />
                       <span>Go to Dashboard</span>
                     </Button>
                   </Link>
                   <Button
-                    variant="outline"
+                    variant="yellow-outline"
                     size="md"
                     onClick={handleSignOut}
                     className="w-full"
@@ -266,7 +256,7 @@ export function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="w-full"
                   >
-                    <Button variant="outline" size="md" className="w-full">
+                    <Button variant="yellow-outline" size="md" className="w-full">
                       Sign In
                     </Button>
                   </Link>
@@ -275,7 +265,7 @@ export function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="w-full"
                   >
-                    <Button variant="primary" size="md" className="w-full gap-2">
+                    <Button variant="yellow" size="md" className="w-full gap-2 shadow-md shadow-yellow-500/20">
                       <span>Get Started Free</span>
                       <ArrowRight className="w-4 h-4" />
                     </Button>

@@ -24,6 +24,7 @@ import {
   CardTitle,
   Skeleton,
 } from '@/components/ui';
+import { BrandLogo } from '@/components/common';
 import { normalizeApiError } from '@/services/api';
 import { employerService } from '@/services/employer.service';
 import { notificationService } from '@/services/notification.service';
@@ -204,21 +205,24 @@ export function EmployerDashboardPage() {
       )}
 
       {/* Welcome Header & Quick Actions */}
-      <Card className="p-6 bg-gradient-to-br from-navy via-navy to-brand-blue/10 border-brand-blue/25">
+      <Card className="p-6 bg-gradient-to-br from-[#111611] via-[#171D17] to-[#C6F500]/10 border-[#303A2B]">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-brand-cyan">
-              <Sparkles className="w-4 h-4" />
-              <span>Employer Hiring Workspace</span>
+          <div className="flex items-start gap-4">
+            <BrandLogo variant="dark" size="md" showText={false} className="shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C6F500]">
+                <Sparkles className="w-4 h-4" />
+                <span>Employer Hiring Workspace</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F7F2]">
+                Welcome back, {employerName}
+              </h1>
+              <p className="text-sm text-[#A3ADA0] max-w-2xl">
+                {orgName
+                  ? `Manage hiring pipelines, review top applicants, and grow your team at ${orgName}.`
+                  : 'Set up your organization profile and start publishing roles to reach matched candidates.'}
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-surface-white">
-              Welcome back, {employerName}
-            </h1>
-            <p className="text-sm text-muted-slate max-w-2xl">
-              {orgName
-                ? `Manage hiring pipelines, review top applicants, and grow your team at ${orgName}.`
-                : 'Set up your organization profile and start publishing roles to reach matched candidates.'}
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

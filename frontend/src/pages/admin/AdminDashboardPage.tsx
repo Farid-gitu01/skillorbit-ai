@@ -26,6 +26,7 @@ import {
   CardTitle,
   Skeleton,
 } from '@/components/ui';
+import { BrandLogo } from '@/components/common';
 import { useAuth } from '@/hooks/useAuth';
 import { adminService } from '@/services/admin.service';
 import { normalizeApiError } from '@/services/api';
@@ -191,20 +192,23 @@ export function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome & Quick Actions Header */}
-      <Card className="border-navy-surface bg-gradient-to-br from-navy to-midnight-navy">
+      <Card className="border-[#303A2B] bg-gradient-to-br from-[#111611] to-[#171D17]">
         <CardContent className="p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider font-semibold text-brand-cyan">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Platform Governance & Operations
+          <div className="flex items-start gap-4">
+            <BrandLogo variant="dark" size="md" showText={false} className="shrink-0 mt-0.5" />
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-wider font-bold text-[#C6F500]">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Platform Governance & Operations
+              </div>
+              <h1 className="text-xl font-bold text-[#F5F7F2]">
+                Welcome back, {user?.name ?? 'Administrator'}
+              </h1>
+              <p className="text-xs text-[#A3ADA0] max-w-2xl leading-relaxed">
+                Monitor real-time platform accounts, review employer and training-provider
+                verification requests, moderate opportunity listings, and audit system events.
+              </p>
             </div>
-            <h1 className="text-xl font-bold text-surface-white">
-              Welcome back, {user?.name ?? 'Administrator'}
-            </h1>
-            <p className="text-xs text-muted-slate max-w-2xl leading-relaxed">
-              Monitor real-time platform accounts, review employer and training-provider
-              verification requests, moderate opportunity listings, and audit system events.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">

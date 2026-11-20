@@ -3,6 +3,7 @@ import { type FilterQuery } from 'mongoose';
 import { Job, type IJob } from '../models/Job.model.js';
 import { Profile } from '../models/Profile.model.js';
 import { sendError, sendPaginated, sendSuccess } from '../utils/api-response.util.js';
+import { escapeRegex } from '../utils/employer.util.js';
 
 export const getJobs = async (req: Request, res: Response): Promise<void> => {
   const {
@@ -23,12 +24,12 @@ export const getJobs = async (req: Request, res: Response): Promise<void> => {
   };
 
   if (q && typeof q === 'string' && q.trim().length > 0) {
-    const regex = new RegExp(q.trim(), 'i');
+    const regex = new RegExp(escapeRegex(q.trim()), 'i');
     filter.$or = [{ title: regex }, { description: regex }, { location: regex }];
   }
 
-  if (location && typeof location === 'string') {
-    filter.location = new RegExp(location.trim(), 'i');
+  if (location && typeof location === 'string' && location.trim().length > 0) {
+    filter.location = new RegExp(escapeRegex(location.trim()), 'i');
   }
 
   if (typeof locationType === 'string' && locationType.length > 0) {
@@ -139,11 +140,16 @@ export const getRecommendedJobs = async (req: Request, res: Response): Promise<v
   };
 
   if (recommendedSkills.length > 0) {
-    const regexList = recommendedSkills.map((s) => new RegExp(s.trim(), 'i'));
-    query.$or = [
-      { title: { $in: regexList } },
-      { description: { $in: regexList } },
-    ];
+    const regexList = recommendedSkills
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+      .map((s) => new RegExp(escapeRegex(s), 'i'));
+    if (regexList.length > 0) {
+      query.$or = [
+        { title: { $in: regexList } },
+        { description: { $in: regexList } },
+      ];
+    }
   }
 
   const jobs = await Job.find(query)

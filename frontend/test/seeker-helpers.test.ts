@@ -37,6 +37,8 @@ test('formatFileSize: Formats bytes into human-readable units', () => {
 
 test('formatDate: Formats valid ISO date and safely falls back on undefined', () => {
   assert.equal(formatDate(undefined), 'N/A');
+  assert.equal(formatDate('invalid-date-string'), 'N/A');
+  assert.equal(formatDate(''), 'N/A');
   const formatted = formatDate('2026-11-11T12:00:00Z');
   assert.ok(formatted.includes('Nov'));
   assert.ok(formatted.includes('2026'));

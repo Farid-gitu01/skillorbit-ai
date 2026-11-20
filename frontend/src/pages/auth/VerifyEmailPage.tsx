@@ -89,9 +89,9 @@ export function VerifyEmailPage() {
   if (isVerifying) {
     return (
       <div className="text-center space-y-4 py-6">
-        <Loader2 className="w-8 h-8 text-brand-blue animate-spin mx-auto" />
-        <h2 className="text-xl font-bold text-surface-white">Verifying email...</h2>
-        <p className="text-xs text-muted-slate">
+        <Loader2 className="w-8 h-8 text-[#C6F500] animate-spin mx-auto" />
+        <h2 className="text-xl font-bold text-[#F5F7F2]">Verifying email...</h2>
+        <p className="text-xs text-[#A3ADA0]">
           Please wait while we confirm your email verification token with the server.
         </p>
       </div>
@@ -102,12 +102,12 @@ export function VerifyEmailPage() {
   if (verificationSuccess) {
     return (
       <div className="text-center space-y-5 py-4">
-        <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="w-12 h-12 rounded-full bg-[#C6F500]/10 text-[#C6F500] border border-[#C6F500]/30 flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-7 h-7" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-surface-white">Email Verified!</h2>
-          <p className="text-xs text-muted-slate mt-2 leading-relaxed max-w-sm mx-auto">
+          <h2 className="text-xl font-bold text-[#F5F7F2]">Email Verified!</h2>
+          <p className="text-xs text-[#A3ADA0] mt-2 leading-relaxed max-w-sm mx-auto">
             Your email address has been successfully verified. Your account is fully active.
           </p>
         </div>
@@ -126,13 +126,13 @@ export function VerifyEmailPage() {
   return (
     <div className="space-y-6">
       <div className="text-left">
-        <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mb-3">
+        <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-400 border border-red-500/30 flex items-center justify-center mb-3">
           <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold text-surface-white tracking-tight">
+        <h2 className="text-xl font-bold text-[#F5F7F2] tracking-tight">
           {verificationError ? 'Verification Failed' : 'Verify Your Email'}
         </h2>
-        <p className="text-xs text-muted-slate mt-1">
+        <p className="text-xs text-[#A3ADA0] mt-1">
           {verificationError ?? 'Enter your email address to receive a new account verification link.'}
         </p>
       </div>
@@ -150,15 +150,15 @@ export function VerifyEmailPage() {
           </Alert>
 
           {resendSuccess.verificationToken && (
-            <div className="p-3 bg-navy-surface border border-slate-700 rounded-btn text-left space-y-1 text-xs">
-              <span className="text-amber-400 font-semibold block">Dev Test Helper:</span>
-              <span className="text-muted-slate break-all font-mono text-[11px]">
+            <div className="p-3 bg-[#111611] border border-[#303A2B] rounded-btn text-left space-y-1 text-xs">
+              <span className="text-[#C6F500] font-semibold block">Dev Test Helper:</span>
+              <span className="text-[#A3ADA0] break-all font-mono text-[11px]">
                 {resendSuccess.verificationToken}
               </span>
               <div className="pt-1">
                 <Link
                   to={`/verify-email?token=${encodeURIComponent(resendSuccess.verificationToken)}`}
-                  className="text-brand-cyan hover:underline font-medium inline-block"
+                  className="text-[#C6F500] hover:underline font-semibold inline-block"
                 >
                   Verify With Token &rarr;
                 </Link>
@@ -169,7 +169,7 @@ export function VerifyEmailPage() {
           <div className="pt-2 text-center">
             <Link
               to="/login"
-              className="inline-flex items-center gap-1.5 text-xs text-brand-cyan hover:underline font-medium"
+              className="inline-flex items-center gap-1.5 text-xs text-[#C6F500] hover:underline font-semibold"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
             </Link>
@@ -194,10 +194,10 @@ export function VerifyEmailPage() {
         </form>
       )}
 
-      <div className="text-center pt-2 border-t border-navy-surface">
+      <div className="text-center pt-2 border-t border-[#303A2B]">
         <Link
           to="/login"
-          className="inline-flex items-center gap-1.5 text-xs text-muted-slate hover:text-surface-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-[#A3ADA0] hover:text-[#F5F7F2] transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
         </Link>

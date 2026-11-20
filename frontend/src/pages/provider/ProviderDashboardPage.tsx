@@ -18,6 +18,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Alert, Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@/components/ui';
+import { BrandLogo } from '@/components/common';
 import { normalizeApiError } from '@/services/api';
 import { providerService } from '@/services/provider.service';
 import type { ProviderDashboardData } from '@/types/provider.types';
@@ -150,29 +151,32 @@ export function ProviderDashboardPage() {
       )}
 
       {/* Welcome Header & Quick Actions */}
-      <Card variant="elevated" className="border-brand-blue/25 bg-gradient-to-br from-navy via-navy to-midnight-navy">
+      <Card variant="elevated" className="border-[#303A2B] bg-gradient-to-br from-[#111611] via-[#171D17] to-[#C6F500]/10">
         <CardContent className="p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="primary">
-                <GraduationCap className="w-3.5 h-3.5" />
-                Training Provider Workspace
-              </Badge>
-              {organization && (
-                <Badge variant={organization.isVerified ? 'success' : 'warning'}>
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  {organization.isVerified ? 'Verified Provider' : 'Pending Verification'}
+          <div className="flex items-start gap-4">
+            <BrandLogo variant="dark" size="md" showText={false} className="shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="primary">
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  Training Provider Workspace
                 </Badge>
-              )}
+                {organization && (
+                  <Badge variant={organization.isVerified ? 'success' : 'warning'}>
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    {organization.isVerified ? 'Verified Provider' : 'Pending Verification'}
+                  </Badge>
+                )}
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#F5F7F2] tracking-tight">
+                Welcome back{user?.name ? `, ${user.name}` : ''}
+              </h1>
+              <p className="text-sm text-[#A3ADA0] max-w-2xl">
+                {organization
+                  ? `${organization.name}${organization.specialization ? ` · ${organization.specialization}` : ''} — publish skill curricula, track learner cohorts, and respond to training enquiries.`
+                  : 'Set up your training provider profile and publish your first certified course or learning track.'}
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-surface-white tracking-tight">
-              Welcome back{user?.name ? `, ${user.name}` : ''}
-            </h1>
-            <p className="text-sm text-muted-slate max-w-2xl">
-              {organization
-                ? `${organization.name}${organization.specialization ? ` · ${organization.specialization}` : ''} — publish skill curricula, track learner cohorts, and respond to training enquiries.`
-                : 'Set up your training provider profile and publish your first certified course or learning track.'}
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">

@@ -1,10 +1,19 @@
-import { Link } from 'react-router-dom';
-import { Sparkles, Mail, Shield, ArrowUp } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { BrandLogo } from '@/components/common';
+import { Mail, Shield, ArrowUp } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const scrollToSection = (sectionId: string) => {
+    if (location.pathname !== '/') {
+      navigate(`/#${sectionId}`);
+      return;
+    }
     const el = document.getElementById(sectionId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -18,47 +27,41 @@ export function Footer() {
 
   return (
     <footer
-      className="bg-midnight-navy border-t border-navy-surface pt-16 pb-12 text-slate-300 relative"
+      className="bg-[#070707] border-t border-neutral-800/90 pt-16 pb-12 text-neutral-400 relative"
       aria-label="SkillOrbit AI Footer"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 border-b border-navy-surface/80">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 border-b border-neutral-800/80">
           {/* Column 1: Brand & Overview (4 cols) */}
           <div className="lg:col-span-4 space-y-4 text-left">
             <button
               onClick={scrollToTop}
-              className="flex items-center gap-2.5 group text-left focus:outline-none"
+              className="flex items-center group text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 rounded-lg p-1"
               aria-label="SkillOrbit AI - Scroll to top"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-blue to-brand-cyan flex items-center justify-center text-white">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <span className="font-extrabold text-xl tracking-tight text-surface-white">
-                Skill<span className="text-brand-cyan">Orbit</span>{' '}
-                <span className="text-brand-blue">AI</span>
-              </span>
+              <BrandLogo variant="yellow" size="md" />
             </button>
-            <p className="text-xs sm:text-sm text-muted-slate leading-relaxed">
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
               AI-powered Career Development & Opportunity Platform. Empowering candidates,
               employers, and training providers with intelligent resume audits, precision skill gap
               diagnostics, and automated learning roadmaps.
             </p>
-            <div className="flex items-center gap-2 text-xs text-brand-cyan font-medium pt-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="flex items-center gap-2 text-xs text-yellow-400 font-semibold pt-1">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
               <span>Platform Core Status: Operational</span>
             </div>
           </div>
 
           {/* Column 2: Navigation Links (2 cols) */}
           <div className="lg:col-span-2 space-y-3 text-left">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-surface-white">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
               Navigation
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <button
                   onClick={() => scrollToSection('home')}
-                  className="hover:text-brand-cyan transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   Home
                 </button>
@@ -66,7 +69,7 @@ export function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection('about')}
-                  className="hover:text-brand-cyan transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   About Us
                 </button>
@@ -74,7 +77,7 @@ export function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection('services')}
-                  className="hover:text-brand-cyan transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   Services
                 </button>
@@ -82,7 +85,7 @@ export function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection('testimonials')}
-                  className="hover:text-brand-cyan transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   Testimonials
                 </button>
@@ -90,7 +93,7 @@ export function Footer() {
               <li>
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="hover:text-brand-cyan transition-colors"
+                  className="hover:text-yellow-400 transition-colors"
                 >
                   Contact Us
                 </button>
@@ -100,84 +103,114 @@ export function Footer() {
 
           {/* Column 3: Platform Services (3 cols) */}
           <div className="lg:col-span-3 space-y-3 text-left">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-surface-white">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
               Core Capabilities
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button
-                  onClick={() => scrollToSection('services')}
-                  className="hover:text-brand-cyan transition-colors text-left"
-                >
-                  AI Resume Analysis
-                </button>
+                {isAuthenticated ? (
+                  <Link to="/seeker/ai/resume" className="hover:text-yellow-400 transition-colors text-left block">
+                    AI Resume Analysis
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => scrollToSection('services')}
+                    className="hover:text-yellow-400 transition-colors text-left"
+                  >
+                    AI Resume Analysis
+                  </button>
+                )}
               </li>
               <li>
-                <button
-                  onClick={() => scrollToSection('services')}
-                  className="hover:text-brand-cyan transition-colors text-left"
-                >
-                  Skill Gap Diagnostics
-                </button>
+                {isAuthenticated ? (
+                  <Link to="/seeker/ai/skill-gap" className="hover:text-yellow-400 transition-colors text-left block">
+                    Skill Gap Diagnostics
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => scrollToSection('services')}
+                    className="hover:text-yellow-400 transition-colors text-left"
+                  >
+                    Skill Gap Diagnostics
+                  </button>
+                )}
               </li>
               <li>
-                <button
-                  onClick={() => scrollToSection('services')}
-                  className="hover:text-brand-cyan transition-colors text-left"
-                >
-                  Personalized Roadmaps
-                </button>
+                {isAuthenticated ? (
+                  <Link to="/seeker/ai/skill-gap" className="hover:text-yellow-400 transition-colors text-left block">
+                    Personalized Roadmaps
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => scrollToSection('services')}
+                    className="hover:text-yellow-400 transition-colors text-left"
+                  >
+                    Personalized Roadmaps
+                  </button>
+                )}
               </li>
               <li>
-                <button
-                  onClick={() => scrollToSection('services')}
-                  className="hover:text-brand-cyan transition-colors text-left"
-                >
-                  Semantic Job Matching
-                </button>
+                {isAuthenticated ? (
+                  <Link to="/seeker/ai/job-matches" className="hover:text-yellow-400 transition-colors text-left block">
+                    Semantic Job Matching
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => scrollToSection('services')}
+                    className="hover:text-yellow-400 transition-colors text-left"
+                  >
+                    Semantic Job Matching
+                  </button>
+                )}
               </li>
               <li>
-                <button
-                  onClick={() => scrollToSection('services')}
-                  className="hover:text-brand-cyan transition-colors text-left"
-                >
-                  AI Career Assistant
-                </button>
+                {isAuthenticated ? (
+                  <Link to="/seeker/ai/assistant" className="hover:text-yellow-400 transition-colors text-left block">
+                    AI Career Assistant
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => scrollToSection('services')}
+                    className="hover:text-yellow-400 transition-colors text-left"
+                  >
+                    AI Career Assistant
+                  </button>
+                )}
               </li>
             </ul>
           </div>
 
           {/* Column 4: Account Portals & Contact (3 cols) */}
           <div className="lg:col-span-3 space-y-3 text-left">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-surface-white">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
               Role Access & Support
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/login" className="hover:text-brand-cyan transition-colors">
+                <Link to="/login" className="hover:text-yellow-400 transition-colors">
                   Job Seeker Portal
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-brand-cyan transition-colors">
+                <Link to="/login" className="hover:text-yellow-400 transition-colors">
                   Employer Recruitment
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-brand-cyan transition-colors">
+                <Link to="/login" className="hover:text-yellow-400 transition-colors">
                   Training Provider Portal
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="text-brand-cyan font-medium hover:underline">
+                <Link to="/register" className="text-yellow-400 font-semibold hover:underline">
                   Create Free Account →
                 </Link>
               </li>
-              <li className="pt-2 flex items-center gap-1.5 text-muted-slate">
-                <Mail className="w-3.5 h-3.5 text-brand-blue" />
+              <li className="pt-2 flex items-center gap-1.5 text-neutral-400">
+                <Mail className="w-3.5 h-3.5 text-yellow-400" />
                 <a
                   href="mailto:support@skillorbit.ai"
-                  className="hover:text-surface-white transition-colors"
+                  className="hover:text-yellow-300 transition-colors"
                 >
                   support@skillorbit.ai
                 </a>
@@ -187,17 +220,17 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright & Compliance */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-slate">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <p>&copy; {currentYear} SkillOrbit AI. All rights reserved.</p>
 
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1 text-slate-400">
-              <Shield className="w-3.5 h-3.5 text-brand-cyan" />
+            <span className="flex items-center gap-1 text-neutral-400">
+              <Shield className="w-3.5 h-3.5 text-yellow-400" />
               <span>Standard Session Security & Data Protection</span>
             </span>
             <button
               onClick={scrollToTop}
-              className="p-2 rounded-lg bg-navy/60 hover:bg-navy-surface text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+              className="p-2 rounded-lg bg-[#111111] hover:bg-[#1A1A1A] border border-neutral-800 text-neutral-300 hover:text-white transition-colors flex items-center gap-1 shadow-sm"
               aria-label="Back to top"
             >
               <ArrowUp className="w-3.5 h-3.5" />

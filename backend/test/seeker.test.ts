@@ -172,6 +172,16 @@ test('Job Validator: Coerces pagination defaults and validates filter enums', ()
     locationType: 'mars-orbit',
   });
   assert.equal(invalid.success, false);
+
+  const specialChars = getJobsQuerySchema.safeParse({
+    q: 'C++ Developer (Senior)',
+    location: 'San Francisco (SF), CA',
+  });
+  assert.equal(specialChars.success, true);
+  if (specialChars.success) {
+    assert.equal(specialChars.data.q, 'C++ Developer (Senior)');
+    assert.equal(specialChars.data.location, 'San Francisco (SF), CA');
+  }
 });
 
 test('Application Validator: Validates required jobId and coverLetter length', () => {
